@@ -15,6 +15,7 @@
  */
 package org.uberfire.client.workbench.widgets.listbar;
 
+<<<<<<< HEAD
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
 import static com.google.gwt.dom.client.Style.Display.*;
 
@@ -33,65 +34,34 @@ import org.jboss.errai.ioc.client.container.IOCResolutionException;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.util.Layouts;
 import org.uberfire.client.workbench.PanelManager;
+=======
+>>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.
 import org.uberfire.client.workbench.panels.MultiPartWidget;
-import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.AbstractSimpleWorkbenchPanelView;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelView;
+<<<<<<< HEAD
 import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
 import org.uberfire.client.workbench.widgets.dnd.DragArea;
 import org.uberfire.client.workbench.widgets.dnd.WorkbenchDragAndDropManager;
 import org.uberfire.client.workbench.widgets.panel.MaximizeToggleButton;
 import org.uberfire.commons.data.Pair;
+=======
+>>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.
 import org.uberfire.mvp.Command;
-import org.uberfire.security.authz.AuthorizationManager;
-import org.uberfire.workbench.model.PartDefinition;
-import org.uberfire.workbench.model.menu.EnabledStateChangeListener;
-import org.uberfire.workbench.model.menu.MenuCustom;
-import org.uberfire.workbench.model.menu.MenuGroup;
-import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.MenuItemCommand;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.github.gwtbootstrap.client.ui.Dropdown;
-import com.github.gwtbootstrap.client.ui.DropdownButton;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The drop-down list that appears when the user clicks the chooser button in the header of a
- * {@link MultiListWorkbenchPanelView}.
+ * API contract for the header widget of panel views that extend {@link AbstractSimpleWorkbenchPanelView} and
+ * {@link MultiListWorkbenchPanelView}. Each application needs exactly one implementation of this class at compile time
+ * (usually this will come from the view module). The implementing type must be a Dependent-scoped CDI bean.
  */
-@Dependent
-public class ListBarWidget
-extends ResizeComposite implements MultiPartWidget {
+public interface ListBarWidget extends MultiPartWidget {
 
     /**
      * When a part is added to the list bar, a special title widget is created for it. This title widget is draggable.
-     * To promote testability, the draggable title widget is given a predictable debug ID of the form
+     * To promote testability, implementations of this interface must set the draggable title widget's debug ID using
+     * the {@code Widget.ensureDebugId()} call. The debug ID must have the form
      * {@code DEBUG_ID_PREFIX + DEBUG_TITLE_PREFIX + partName}.
      * <p>
      * Note that debug IDs are only assigned when the app inherits the GWT Debug module. See
@@ -99,6 +69,7 @@ extends ResizeComposite implements MultiPartWidget {
      */
     public static final String DEBUG_TITLE_PREFIX = "ListBar-title-";
 
+<<<<<<< HEAD
     interface ListBarWidgetBinder
     extends
     UiBinder<ResizeFocusPanel, ListBarWidget> {
@@ -576,11 +547,15 @@ extends ResizeComposite implements MultiPartWidget {
         return null;
     }
 
+=======
+>>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.
     /**
-     * This is the list that appears when you click the down-arrow button in the header (dropdownCaret). It lists all
-     * the available parts. Clicking on a list item selects its associated part, making it visible, and hiding all other
-     * parts.
+     * Sets this list bar's properties: single-part or multi-part; support drag and drop of parts or not.
+     *
+     * @param isMultiPart If true, the list bar will keep track of multiple parts and offer a drop-down list that allows the user to pick the current one.
+     * @param isDndEnabled
      */
+<<<<<<< HEAD
     class PartChooserList extends ResizeComposite {
 
         final ResizeFlowPanel panel = new ResizeFlowPanel();
@@ -615,20 +590,14 @@ extends ResizeComposite implements MultiPartWidget {
                 setWidth( width + "px" );
             }
         }
+=======
+    public void setup( boolean isMultiPart,
+                       boolean isDndEnabled );
+>>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.
 
-        public void clear() {
-            panel.clear();
-        }
-    }
+    public void enableDnd();
 
-    private void scheduleResize() {
-        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                onResize();
-            }
-        } );
-    }
+    public void setExpanderCommand( final Command command );
 
     /**
      * Returns the toggle button, which is initially hidden, that can be used to trigger maximizing and unmaximizing

@@ -18,7 +18,6 @@ package org.uberfire.client.workbench.panels.impl;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.uberfire.client.util.Layouts;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
 import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
 import org.uberfire.client.workbench.widgets.listbar.ListBarWidget;
@@ -57,6 +56,7 @@ extends AbstractDockingWorkbenchPanelView<P> {
         addOnFocusHandler( listBar );
         addSelectionHandler( listBar );
         listBar.asWidget().getElement().getStyle().setOverflow( Style.Overflow.HIDDEN );
+<<<<<<< HEAD
         Layouts.setToFillParent( listBar );
 
         final MaximizeToggleButton maximizeButton = listBar.getMaximizeButton();
@@ -73,6 +73,8 @@ extends AbstractDockingWorkbenchPanelView<P> {
                 unmaximize();
             }
         } );
+=======
+>>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.
     }
 
     public void enableDnd() {
