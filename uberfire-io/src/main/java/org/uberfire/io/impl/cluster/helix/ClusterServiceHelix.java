@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.helix.Criteria;
 import org.apache.helix.HelixManager;
@@ -36,12 +36,13 @@ public class ClusterServiceHelix implements ClusterService {
     private final String clusterName;
     private final String instanceName;
     private final HelixManager participantManager;
-    private final SimpleLock lock = new SimpleLock();
     private final String resourceName;
-    private AtomicInteger stackSize = new AtomicInteger( 0 );
     private final Map<String, MessageHandlerResolver> messageHandlerResolver = new HashMap<String, MessageHandlerResolver>();
-    private AtomicBoolean started = new AtomicBoolean( false );
+    private final AtomicBoolean started = new AtomicBoolean( false );
     private final Collection<Runnable> onStart = new ArrayList<Runnable>();
+
+    private final SimpleLock networkLock = new SimpleLock();
+    private final ReentrantLock clusterLock = new ReentrantLock( true );
 
     public ClusterServiceHelix( final String clusterName,
                                 final String zkAddress,
@@ -70,7 +71,7 @@ public class ClusterServiceHelix implements ClusterService {
         try {
             this.participantManager.connect();
             disablePartition();
-            this.participantManager.getStateMachineEngine().registerStateModelFactory( "LeaderStandby", new LockTransitionalFactory( lock ) );
+            this.participantManager.getStateMachineEngine().registerStateModelFactory( "LeaderStandby", new LockTransitionalFactory( networkLock ) );
             this.participantManager.getMessagingService().registerMessageHandlerFactory( Message.MessageType.USER_DEFINE_MSG.toString(), new MessageHandlerResolverWrapper( messageHandlerResolver ).convert() );
             started.set( true );
             for ( final Runnable runnable : onStart ) {
@@ -99,7 +100,7 @@ public class ClusterServiceHelix implements ClusterService {
 
     @Override
     public boolean isInnerLocked() {
-        return stackSize.get() > 1;
+        return clusterLock.getHoldCount() > 1;
     }
 
     private void enablePartition() {
@@ -121,16 +122,16 @@ public class ClusterServiceHelix implements ClusterService {
         if ( !isStarted() ) {
             return;
         }
-        stackSize.incrementAndGet();
-        if ( lock.isLocked() ) {
-            return;
+        clusterLock.lock();
+        if ( clusterLock.getHoldCount() == 1 ) {
+            enablePartition();
         }
         enablePartition();
 
-        while ( !lock.isLocked() ) {
+        while ( !networkLock.isLocked() ) {
             try {
                 Thread.sleep( 10 );
-            } catch ( InterruptedException e ) {
+            } catch ( final InterruptedException ignored ) {
             }
         }
     }
@@ -140,19 +141,15 @@ public class ClusterServiceHelix implements ClusterService {
         if ( !isStarted() ) {
             return;
         }
-        stackSize.decrementAndGet();
-        if ( !lock.isLocked() ) {
-            stackSize.set( 0 );
-            return;
-        }
+        clusterLock.unlock();
 
-        if ( stackSize.get() == 0 ) {
+        if ( clusterLock.getHoldCount() == 0 ) {
             disablePartition();
 
-            while ( lock.isLocked() ) {
+            while ( networkLock.isLocked() ) {
                 try {
                     Thread.sleep( 10 );
-                } catch ( InterruptedException e ) {
+                } catch ( final InterruptedException ignored ) {
                 }
             }
         }
@@ -163,7 +160,7 @@ public class ClusterServiceHelix implements ClusterService {
         if ( !isStarted() ) {
             return true;
         }
-        return lock.isLocked();
+        return clusterLock.isLocked();
     }
 
     @Override

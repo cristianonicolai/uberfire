@@ -20,10 +20,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.uberfire.commons.lock.LockService;
 import org.uberfire.io.IOService;
 import org.uberfire.io.IOWatchService;
-import org.uberfire.io.lock.FSLockService;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.channels.SeekableByteChannel;
 import org.uberfire.java.nio.file.AtomicMoveNotSupportedException;
@@ -57,17 +55,6 @@ public class IOServiceNio2WrapperImpl
     public IOServiceNio2WrapperImpl( final String id,
                                      final IOWatchService watchService ) {
         super( id, watchService );
-    }
-
-    public IOServiceNio2WrapperImpl( final FSLockService lockService,
-                                     final IOWatchService watchService ) {
-        super( lockService, watchService );
-    }
-
-    public IOServiceNio2WrapperImpl( final String id,
-                                     final FSLockService lockService,
-                                     final IOWatchService watchService ) {
-        super( id, lockService, watchService );
     }
 
     @Override

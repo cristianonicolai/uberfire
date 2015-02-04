@@ -226,9 +226,7 @@ public class IOServiceClusterImpl implements IOClusteredService {
     public void startBatch( FileSystem[] fs,
                             final Option... options ) {
         clusterService.lock();
-        for ( final FileSystem f : fs ) {
-            batchFileSystems.add( f );
-        }
+        Collections.addAll( batchFileSystems, fs );
         service.startBatch( fs, options );
     }
 
@@ -243,9 +241,7 @@ public class IOServiceClusterImpl implements IOClusteredService {
     @Override
     public void startBatch( final FileSystem... fs ) {
         clusterService.lock();
-        for ( FileSystem f : fs ) {
-            batchFileSystems.add( f );
-        }
+        Collections.addAll( batchFileSystems, fs );
         service.startBatch( fs );
     }
 
