@@ -20,41 +20,41 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.uberfire.client.util.Layouts;
+import org.uberfire.client.views.bs2.maximize.MaximizeToggleButton;
+import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
 import org.uberfire.client.workbench.panels.MultiPartWidget;
-<<<<<<< HEAD:uberfire-workbench/uberfire-workbench-client/src/main/java/org/uberfire/client/workbench/panels/impl/MultiTabWorkbenchPanelView.java
-import org.uberfire.client.workbench.widgets.panel.MaximizeToggleButton;
-import org.uberfire.client.workbench.widgets.tab.UberTabPanel;
+import org.uberfire.client.workbench.panels.impl.AbstractMultiPartWorkbenchPanelView;
+import org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter;
 import org.uberfire.mvp.Command;
 
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-=======
-import org.uberfire.client.workbench.panels.impl.AbstractMultiPartWorkbenchPanelView;
-import org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter;
->>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.:uberfire-workbench/uberfire-workbench-client-views-bs2/src/main/java/org/uberfire/client/views/bs2/tab/MultiTabWorkbenchPanelView.java
 
 @Dependent
 @Named("MultiTabWorkbenchPanelView")
 public class MultiTabWorkbenchPanelView
-extends AbstractMultiPartWorkbenchPanelView<MultiTabWorkbenchPanelPresenter> {
+        extends AbstractMultiPartWorkbenchPanelView<MultiTabWorkbenchPanelPresenter> {
 
     @Inject
     MaximizeToggleButton maximizeButton;
+
+    MaximizeToggleButtonPresenter maximizeButtonPresenter;
 
     @Inject
     UberTabPanel tabPanel;
 
     @Override
     protected MultiPartWidget setupWidget() {
-        maximizeButton.setMaximizeCommand( new Command() {
+        maximizeButtonPresenter = new MaximizeToggleButtonPresenter( maximizeButton );
+        maximizeButtonPresenter.setMaximizeCommand( new Command() {
             @Override
             public void execute() {
                 maximize();
             }
         } );
-        maximizeButton.setUnmaximizeCommand( new Command() {
+        maximizeButtonPresenter.setUnmaximizeCommand( new Command() {
             @Override
             public void execute() {
                 unmaximize();

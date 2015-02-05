@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
+import org.uberfire.client.workbench.widgets.listbar.ListbarPreferences;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.workbench.model.PartDefinition;
 
@@ -28,14 +29,14 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 @RunWith(GwtMockitoTestRunner.class)
-    public class ListBarWidgetTest {
+public class ListBarWidgetTest {
 
     @InjectMocks
-    private ListBarWidget widget;
+    private ListBarWidgetImpl widget;
 
     // mockito was having classloader issues when mocking this, so we use a spy instead
     @Spy
-    private Instance<ListbarPreferences> optionalListBarPrefs = new Instance<ListbarPreferences>() {
+    private final Instance<ListbarPreferences> optionalListBarPrefs = new Instance<ListbarPreferences>() {
 
         @Override
         public Iterator<ListbarPreferences> iterator() {

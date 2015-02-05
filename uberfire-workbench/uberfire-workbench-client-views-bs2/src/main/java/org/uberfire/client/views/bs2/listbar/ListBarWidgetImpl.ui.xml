@@ -19,7 +19,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:tb="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:uf="urn:import:org.uberfire.client.workbench.widgets.listbar"
-             xmlns:ufp="urn:import:org.uberfire.client.workbench.widgets.panel">
+             xmlns:ufm="urn:import:org.uberfire.client.views.bs2.maximize">
 
   <ui:with field="res" type="org.uberfire.client.resources.WorkbenchResources"/>
 
@@ -39,7 +39,7 @@
     .inline {
       display: inline;
     }
-    
+
     .fill-parent {
       position: relative;
       top: 0;
@@ -62,7 +62,7 @@
             <tb:DropdownButton ui:field="dropdownCaret" size="MINI"/>
           </tb:ButtonGroup>
           <tb:ButtonGroup>
-            <ufp:MaximizeToggleButton ui:field="maximizeButton"/>
+            <ufm:MaximizeToggleButton ui:field="maximizeButton"/>
           </tb:ButtonGroup>
         </g:FlowPanel>
 

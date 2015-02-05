@@ -19,9 +19,9 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
 import org.uberfire.client.workbench.panels.MultiPartWidget;
 import org.uberfire.client.workbench.widgets.listbar.ListBarWidget;
-import org.uberfire.client.workbench.widgets.panel.MaximizeToggleButton;
 import org.uberfire.mvp.Command;
 
 /**
@@ -30,7 +30,7 @@ import org.uberfire.mvp.Command;
 @Dependent
 @Named("MultiListWorkbenchPanelView")
 public class MultiListWorkbenchPanelView
-extends AbstractMultiPartWorkbenchPanelView<MultiListWorkbenchPanelPresenter> {
+        extends AbstractMultiPartWorkbenchPanelView<MultiListWorkbenchPanelPresenter> {
 
     @Inject
     protected ListBarWidget listBar;
@@ -48,7 +48,7 @@ extends AbstractMultiPartWorkbenchPanelView<MultiListWorkbenchPanelPresenter> {
         addOnFocusHandler( listBar );
         addSelectionHandler( listBar );
 
-        final MaximizeToggleButton maximizeButton = listBar.getMaximizeButton();
+        final MaximizeToggleButtonPresenter maximizeButton = listBar.getMaximizeButton();
         maximizeButton.setVisible( true );
         maximizeButton.setMaximizeCommand( new Command() {
             @Override
@@ -77,10 +77,10 @@ extends AbstractMultiPartWorkbenchPanelView<MultiListWorkbenchPanelPresenter> {
         super.unmaximize();
         listBar.getMaximizeButton().setMaximized( false );
     }
-    
+
     @Override
     public void setElementId( String elementId ) {
         super.setElementId( elementId );
-        listBar.getMaximizeButton().ensureDebugId( elementId + "-maximizeButton" );
+        listBar.getMaximizeButton().getView().asWidget().ensureDebugId( elementId + "-maximizeButton" );
     }
 }

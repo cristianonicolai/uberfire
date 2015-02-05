@@ -7,7 +7,6 @@ import javax.inject.Named;
 import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.TemplatedActivity;
-import org.uberfire.client.workbench.events.MaximizePlaceEvent;
 import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
 
 @Dependent
@@ -51,7 +50,7 @@ public class TemplatedWorkbenchPanelPresenter extends AbstractWorkbenchPanelPres
                          String contextId ) {
         if ( getPanels().isEmpty() ) {
             throw new IllegalStateException( "This panel type does not support parts directly; it forwards add part requests"
-                    + " to its first child panel. However, this panel currently has no child panels." );
+                                                     + " to its first child panel. However, this panel currently has no child panels." );
         }
         getPanels().values().iterator().next().addPart( part, contextId );
     }

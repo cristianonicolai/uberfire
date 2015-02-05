@@ -6,14 +6,10 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-<<<<<<< HEAD:uberfire-workbench/uberfire-workbench-client/src/test/java/org/uberfire/client/workbench/panels/impl/MultiTabWorkbenchPanelViewTest.java
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.client.views.bs2.maximize.MaximizeToggleButton;
 import org.uberfire.client.workbench.widgets.listbar.ResizeFlowPanel;
-import org.uberfire.client.workbench.widgets.panel.MaximizeToggleButton;
-import org.uberfire.client.workbench.widgets.tab.UberTabPanel;
-=======
->>>>>>> Pulled out the Bootstrap 2 dependency and all views that depend on it into a separate package.:uberfire-workbench/uberfire-workbench-client-views-bs2/src/test/java/org/uberfire/client/views/bs2/tab/MultiTabWorkbenchPanelViewTest.java
 import org.uberfire.mvp.Command;
 
 import com.google.gwt.dom.client.Style;
