@@ -1,17 +1,14 @@
 package org.uberfire.wbtest.gwttest;
 
-import static com.google.common.base.Predicates.*;
-import static org.uberfire.client.mvp.ActivityLifecycleError.LifecyclePhase.*;
-import static org.uberfire.debug.Debug.*;
-import static org.uberfire.wbtest.testutil.TestingPredicates.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Predicate;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import org.jboss.errai.enterprise.client.cdi.AbstractCDIEventCallback;
 import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.junit.Ignore;
 import org.uberfire.client.mvp.ActivityLifecycleError;
 import org.uberfire.client.mvp.ActivityLifecycleError.LifecyclePhase;
 import org.uberfire.client.mvp.ActivityManager;
@@ -29,9 +26,10 @@ import org.uberfire.wbtest.client.main.DefaultScreenActivity;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PartDefinition;
 
-import com.google.common.base.Predicate;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import static com.google.common.base.Predicates.*;
+import static org.uberfire.client.mvp.ActivityLifecycleError.LifecyclePhase.*;
+import static org.uberfire.debug.Debug.*;
+import static org.uberfire.wbtest.testutil.TestingPredicates.*;
 
 /**
  * Tests for bulletproofing and notification for activities that throw exceptions from their lifecycle methods.
@@ -73,28 +71,27 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     /**
      * Tests that we remain on the current perspective when the requested one can't be started.
      */
-    @Ignore("@WorkbenchPopup's use of Bs3Modal has issues. Method renamed as GwtTestCase does not honour @Ignore")
-    public void _testBrokenPerspectiveStartup() throws Exception {
+    public void testBrokenPerspectiveStartup() throws Exception {
         final PlaceRequest brokenPerspectivePlace = DefaultPlaceRequest.parse( BreakablePerspective.class.getName() + "?broken=" + STARTUP );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenPerspectivePlace );
-            }
-        } )
-        .thenDelay( 500 )
-        .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
-                assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, STARTUP ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenPerspectivePlace );
+                    }
+                } )
+                .thenDelay( 500 )
+                .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
+                        assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, STARTUP ) );
+                    }
+                } );
     }
 
     /**
@@ -103,27 +100,27 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     public void testBrokenPerspectiveOpen() throws Exception {
         final PlaceRequest brokenPerspectivePlace = DefaultPlaceRequest.parse( BreakablePerspective.class.getName() + "?broken=" + OPEN );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenPerspectivePlace );
-            }
-        } )
-        .thenDelay( 500 )
-        .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( DefaultPerspectiveActivity.class.getName(),
-                              perspectiveManager.getCurrentPerspective().getPlace().getIdentifier() );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
-                assertNull( placeManager.getActivity( brokenPerspectivePlace ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
-                assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, OPEN ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenPerspectivePlace );
+                    }
+                } )
+                .thenDelay( 500 )
+                .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( DefaultPerspectiveActivity.class.getName(),
+                                      perspectiveManager.getCurrentPerspective().getPlace().getIdentifier() );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
+                        assertNull( placeManager.getActivity( brokenPerspectivePlace ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
+                        assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, OPEN ) );
+                    }
+                } );
     }
 
     /**
@@ -133,29 +130,29 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     public void testBrokenPerspectiveClose() throws Exception {
         final PlaceRequest brokenPerspectivePlace = DefaultPlaceRequest.parse( BreakablePerspective.class.getName() + "?broken=" + CLOSE );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenPerspectivePlace );
-            }
-        } )
-        .thenPollWhile( BREAKABLE_MENU_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( DefaultPerspectiveActivity.class.getName() );
-            }
-        } )
-        .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
-                assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, CLOSE ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenPerspectivePlace );
+                    }
+                } )
+                .thenPollWhile( BREAKABLE_MENU_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( DefaultPerspectiveActivity.class.getName() );
+                    }
+                } )
+                .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
+                        assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, CLOSE ) );
+                    }
+                } );
     }
 
     /**
@@ -165,56 +162,55 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     public void testBrokenPerspectiveShutdown() throws Exception {
         final PlaceRequest brokenPerspectivePlace = DefaultPlaceRequest.parse( BreakablePerspective.class.getName() + "?broken=" + SHUTDOWN );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenPerspectivePlace );
-            }
-        } )
-        .thenPollWhile( BREAKABLE_MENU_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( DefaultPerspectiveActivity.class.getName() );
-            }
-        } )
-        .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
-                assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, SHUTDOWN ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenPerspectivePlace );
+                    }
+                } )
+                .thenPollWhile( BREAKABLE_MENU_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( DefaultPerspectiveActivity.class.getName() );
+                    }
+                } )
+                .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenPerspectivePlace ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( BreakableMenuScreen.class.getName() ) );
+                        assertTrue( lifecycleErrorLog.contains( BreakablePerspective.class, SHUTDOWN ) );
+                    }
+                } );
     }
 
     /**
      * Tests that launching a screen with broken startup doesn't corrupt the *Manager state.
      */
-    @Ignore("@WorkbenchPopup's use of Bs3Modal has issues. Method renamed as GwtTestCase does not honour @Ignore")
-    public void _testBrokenScreenStartup() throws Exception {
+    public void testBrokenScreenStartup() throws Exception {
         final PlaceRequest brokenScreenPlace = DefaultPlaceRequest.parse( BreakableScreen.class.getName() + "?broken=" + STARTUP );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenScreenPlace );
-            }
-        } )
-        .thenDelay( 500 )
-        .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
-                assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
-                assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, STARTUP ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenScreenPlace );
+                    }
+                } )
+                .thenDelay( 500 )
+                .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
+                        assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
+                        assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, STARTUP ) );
+                    }
+                } );
     }
 
     /**
@@ -223,24 +219,24 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     public void testBrokenScreenOpen() throws Exception {
         final PlaceRequest brokenScreenPlace = DefaultPlaceRequest.parse( BreakableScreen.class.getName() + "?broken=" + OPEN );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenScreenPlace );
-            }
-        } )
-        .thenDelay( 500 )
-        .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
-                assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
-                assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, OPEN ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenScreenPlace );
+                    }
+                } )
+                .thenDelay( 500 )
+                .thenPollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
+                        assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
+                        assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, OPEN ) );
+                    }
+                } );
     }
 
     /**
@@ -249,31 +245,31 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     public void testBrokenScreenClose() throws Exception {
         final PlaceRequest brokenScreenPlace = DefaultPlaceRequest.parse( BreakableScreen.class.getName() + "?broken=" + CLOSE );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenScreenPlace );
-            }
-        } )
-        .thenPollWhile( BREAKABLE_SCREEN_NOT_VISIBLE )
-        .thenDelay( 500 )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.closePlace( brokenScreenPlace );
-            }
-        } )
-        .thenPollWhile( not( BREAKABLE_SCREEN_NOT_VISIBLE ) )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
-                assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
-                assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, CLOSE ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenScreenPlace );
+                    }
+                } )
+                .thenPollWhile( BREAKABLE_SCREEN_NOT_VISIBLE )
+                .thenDelay( 500 )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.closePlace( brokenScreenPlace );
+                    }
+                } )
+                .thenPollWhile( not( BREAKABLE_SCREEN_NOT_VISIBLE ) )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
+                        assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
+                        assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, CLOSE ) );
+                    }
+                } );
     }
 
     /**
@@ -282,31 +278,31 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     public void testBrokenScreenShutdown() throws Exception {
         final PlaceRequest brokenScreenPlace = DefaultPlaceRequest.parse( BreakableScreen.class.getName() + "?broken=" + SHUTDOWN );
         pollWhile( DEFAULT_SCREEN_NOT_VISIBLE )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.goTo( brokenScreenPlace );
-            }
-        } )
-        .thenPollWhile( BREAKABLE_SCREEN_NOT_VISIBLE )
-        .thenDelay( 500 )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                placeManager.closePlace( brokenScreenPlace );
-            }
-        } )
-        .thenPollWhile( not( BREAKABLE_SCREEN_NOT_VISIBLE ) )
-        .thenDo( new Runnable() {
-            @Override
-            public void run() {
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
-                assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
-                assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
-                assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
-                assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, SHUTDOWN ) );
-            }
-        } );
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.goTo( brokenScreenPlace );
+                    }
+                } )
+                .thenPollWhile( BREAKABLE_SCREEN_NOT_VISIBLE )
+                .thenDelay( 500 )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        placeManager.closePlace( brokenScreenPlace );
+                    }
+                } )
+                .thenPollWhile( not( BREAKABLE_SCREEN_NOT_VISIBLE ) )
+                .thenDo( new Runnable() {
+                    @Override
+                    public void run() {
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultPerspectiveActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.OPEN, placeManager.getStatus( DefaultScreenActivity.class.getName() ) );
+                        assertEquals( PlaceStatus.CLOSE, placeManager.getStatus( brokenScreenPlace ) );
+                        assertPanelDoesNotContain( panelManager.getRoot(), brokenScreenPlace );
+                        assertTrue( lifecycleErrorLog.contains( BreakableScreen.class, SHUTDOWN ) );
+                    }
+                } );
     }
 
     public void assertPanelDoesNotContain( PanelDefinition panelDef,
@@ -319,6 +315,7 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
     }
 
     public static class LifecycleErrorLogger extends AbstractCDIEventCallback<ActivityLifecycleError> {
+
         List<ActivityLifecycleError> errors = new ArrayList<ActivityLifecycleError>();
 
         @Override
@@ -326,7 +323,8 @@ public class BrokenLifecycleTest extends AbstractUberFireGwtTest {
             errors.add( event );
         }
 
-        public boolean contains( Class<?> activityType, LifecyclePhase failedCallback ) {
+        public boolean contains( Class<?> activityType,
+                                 LifecyclePhase failedCallback ) {
             for ( ActivityLifecycleError error : errors ) {
                 if ( error.getFailedActivity().getClass() == activityType && error.getFailedCall() == failedCallback ) {
                     return true;
