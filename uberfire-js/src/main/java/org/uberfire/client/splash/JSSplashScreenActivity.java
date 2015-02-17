@@ -15,8 +15,6 @@
  */
 package org.uberfire.client.splash;
 
-import static org.uberfire.commons.validation.PortablePreconditions.*;
-
 import java.util.Collection;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -29,17 +27,20 @@ import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.SplashScreenFilter;
 
+import static org.uberfire.commons.validation.PortablePreconditions.*;
+
 public class JSSplashScreenActivity implements SplashScreenActivity {
 
-    private Boolean showAgain;
-    private Boolean isEnabled;
+    private Boolean showAgain = Boolean.TRUE;
+    private Boolean isEnabled = Boolean.TRUE;
     private SplashScreenFilter splashFilter;
 
     private final JSNativeSplashScreen nativeSplashScreen;
     private PlaceRequest place;
     private final SplashView splash;
 
-    public JSSplashScreenActivity( final JSNativeSplashScreen nativeSplashScreen, SplashView splashView ) {
+    public JSSplashScreenActivity( final JSNativeSplashScreen nativeSplashScreen,
+                                   final SplashView splashView ) {
         this.nativeSplashScreen = checkNotNull( "nativeSplashScreen", nativeSplashScreen );
         this.splash = checkNotNull( "splashView", splashView );
         this.splashFilter = nativeSplashScreen.buildFilter();
