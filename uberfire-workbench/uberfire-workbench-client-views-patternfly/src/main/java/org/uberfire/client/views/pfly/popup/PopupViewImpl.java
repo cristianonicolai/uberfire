@@ -64,12 +64,12 @@ public class PopupViewImpl extends Composite implements PopupView {
             }
         } );
 
-        modal.addHideHandler(new ModalHideHandler() {
+        modal.addHideHandler( new ModalHideHandler() {
             @Override
             public void onHide( ModalHideEvent evt ) {
                 CloseEvent.fire( PopupViewImpl.this, PopupViewImpl.this, false );
             }
-        });
+        } );
     }
 
     @Override
