@@ -286,6 +286,11 @@ public class ClusterServiceHelix implements ClusterService {
         }};
     }
 
+    @Override
+    public int priority() {
+        return Integer.MIN_VALUE + 200;
+    }
+
     class MessageHandlerResolverWrapper {
 
         MessageHandlerFactory convert() {
