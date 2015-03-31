@@ -1,5 +1,7 @@
 package org.uberfire.io.impl.cluster.helix;
 
+import java.util.concurrent.Semaphore;
+
 import org.apache.helix.NotificationContext;
 import org.apache.helix.model.Message;
 import org.apache.helix.participant.statemachine.StateModel;
@@ -10,24 +12,27 @@ import org.apache.helix.participant.statemachine.Transition;
 public class LockTransitionModel extends StateModel {
 
     private final String lockName;
-    private final SimpleLock lock;
+    private final Semaphore locked;
+    private final Semaphore unlocked;
 
-    public LockTransitionModel( final String lockName,
-                                final SimpleLock lock ) {
+    public LockTransitionModel( String lockName,
+                                Semaphore locked,
+                                Semaphore unlocked ) {
         this.lockName = lockName;
-        this.lock = lock;
+        this.locked = locked;
+        this.unlocked = unlocked;
     }
 
     @Transition(from = "STANDBY", to = "LEADER")
     public void lock( final Message m,
                       final NotificationContext context ) {
-        lock.lock();
+        locked.release();
     }
 
     @Transition(from = "LEADER", to = "STANDBY")
     public void release( final Message m,
                          final NotificationContext context ) {
-        lock.unlock();
+        unlocked.release();
     }
 
     @Transition(from = "STANDBY", to = "OFFLINE")
