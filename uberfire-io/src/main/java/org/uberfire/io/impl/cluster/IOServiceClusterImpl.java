@@ -128,7 +128,9 @@ public class IOServiceClusterImpl implements IOClusteredService {
 
     @Override
     public void start() {
-        started.set( true );
+        if ( !started.compareAndSet( false, true ) ) {
+            return;
+        }
         logger.debug( "Starting cluster service {}", this );
         //New cluster members are executed within locked
         new LockExecuteReleaseTemplate<Void>().execute( clusterService, new FutureTask<Void>( new Callable<Void>() {
@@ -209,12 +211,6 @@ public class IOServiceClusterImpl implements IOClusteredService {
                 return null;
             }
         } ) );
-    }
-
-    @Override
-    public void dispose() {
-        clusterService.dispose();
-        service.dispose();
     }
 
     @Override
@@ -976,6 +972,15 @@ public class IOServiceClusterImpl implements IOClusteredService {
 
     private boolean isBatch( final FileSystem fs ) {
         return fs instanceof FileSystemStateAware && ( (FileSystemStateAware) ( fs ) ).getState().equals( FileSystemState.BATCH );
+    }
+
+    @Override
+    public void dispose() {
+    }
+
+    @Override
+    public int priority() {
+        return service.priority() - 1;
     }
 
     class NewFileSystemMessageHandler implements MessageHandler {
