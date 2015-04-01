@@ -34,9 +34,8 @@ import org.uberfire.commons.message.AsyncCallback;
 import org.uberfire.commons.message.MessageHandler;
 import org.uberfire.commons.message.MessageHandlerResolver;
 import org.uberfire.commons.message.MessageType;
-import org.uberfire.io.IOClusteredService;
 import org.uberfire.io.IOService;
-import org.uberfire.io.impl.IOServiceIdentifiable;
+import org.uberfire.io.impl.IOServiceLockable;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.base.FileSystemId;
 import org.uberfire.java.nio.base.FileSystemState;
@@ -66,13 +65,12 @@ import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull
 import static org.uberfire.commons.validation.Preconditions.*;
 import static org.uberfire.io.impl.cluster.ClusterMessageType.*;
 
-public class IOServiceClusterImpl implements IOClusteredService {
+public class IOServiceClusterImpl implements IOService {
 
     private static final Logger logger = LoggerFactory.getLogger( IOServiceClusterImpl.class );
 
-    private final IOServiceIdentifiable service;
+    private final IOServiceLockable service;
     private final ClusterService clusterService;
-    private final AtomicBoolean started = new AtomicBoolean( false );
     private final Set<String> batchFileSystems = Collections.newSetFromMap( new ConcurrentHashMap<String, Boolean>() );
 
     private NewFileSystemListener newFileSystemListener = null;
@@ -86,7 +84,7 @@ public class IOServiceClusterImpl implements IOClusteredService {
                                  final ClusterServiceFactory clusterServiceFactory,
                                  final boolean autoStart ) {
         checkNotNull( "clusterServiceFactory", clusterServiceFactory );
-        this.service = checkInstanceOf( "service", service, IOServiceIdentifiable.class );
+        this.service = checkInstanceOf( "service", service, IOServiceLockable.class );
 
         logger.debug( "Creating instance of cluster service with auto start {}", autoStart );
         this.clusterService = clusterServiceFactory.build( new MessageHandlerResolver() {
@@ -118,20 +116,11 @@ public class IOServiceClusterImpl implements IOClusteredService {
             }
         } );
 
-        this.clusterService.onStart( new Runnable() {
-            @Override
-            public void run() {
-                start();
-            }
-        } );
+        start();
     }
 
-    @Override
-    public void start() {
-        if ( !started.compareAndSet( false, true ) ) {
-            return;
-        }
-        logger.debug( "Starting cluster service {}", this );
+    private void start() {
+        logger.debug( "Starting IO Cluster service {}", this );
         //New cluster members are executed within locked
         new LockExecuteReleaseTemplate<Void>().execute( clusterService, new FutureTask<Void>( new Callable<Void>() {
             @Override
@@ -255,14 +244,14 @@ public class IOServiceClusterImpl implements IOClusteredService {
     @Override
     public void endBatch() {
         service.endBatch();
-        if ( !clusterService.isInnerLocked() ) {
+        if ( service.getLockControl().getHoldCount() == 0 ) {
             final AtomicInteger process = new AtomicInteger( batchFileSystems.size() );
 
             for ( final FileSystem fs : service.getFileSystems() ) {
                 if ( fs instanceof FileSystemId &&
                         batchFileSystems.contains( ( (FileSystemId) fs ).id() ) ) {
                     try {
-                        new FileSystemSyncLock<Void>( service.getId(), fs ).execute( clusterService, new FutureTask<Void>( new Callable<Void>() {
+                        new FileSystemSyncNonLock<Void>( service.getId(), fs ).execute( clusterService, new FutureTask<Void>( new Callable<Void>() {
                             @Override
                             public Void call() throws Exception {
                                 if ( process.decrementAndGet() == 0 ) {
@@ -976,6 +965,7 @@ public class IOServiceClusterImpl implements IOClusteredService {
 
     @Override
     public void dispose() {
+        service.dispose();
     }
 
     @Override

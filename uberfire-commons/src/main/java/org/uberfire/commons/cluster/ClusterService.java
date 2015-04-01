@@ -11,9 +11,7 @@ public interface ClusterService extends MessageService,
 
     void addMessageHandlerResolver( final MessageHandlerResolver resolver );
 
-    void start();
-
     void onStart( Runnable runnable );
 
-    boolean isInnerLocked();
+    int getHoldCount();
 }

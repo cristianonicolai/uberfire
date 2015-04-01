@@ -1,12 +1,9 @@
 package org.uberfire.io.impl.cluster.helix;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.helix.Criteria;
@@ -16,6 +13,7 @@ import org.apache.helix.NotificationContext;
 import org.apache.helix.messaging.handling.HelixTaskResult;
 import org.apache.helix.messaging.handling.MessageHandler;
 import org.apache.helix.messaging.handling.MessageHandlerFactory;
+import org.apache.helix.model.ExternalView;
 import org.apache.helix.model.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,7 @@ import static org.apache.helix.HelixManagerFactory.*;
 
 public class ClusterServiceHelix implements ClusterService {
 
+    private static final AtomicInteger counter = new AtomicInteger( 0 );
     private static final Logger logger = LoggerFactory.getLogger( ClusterServiceHelix.class );
 
     private final String clusterName;
@@ -39,12 +38,6 @@ public class ClusterServiceHelix implements ClusterService {
     private final HelixManager participantManager;
     private final String resourceName;
     private final Map<String, MessageHandlerResolver> messageHandlerResolver = new ConcurrentHashMap<String, MessageHandlerResolver>();
-    private final Collection<Runnable> onStart = new CopyOnWriteArrayList<Runnable>();
-
-    private final AtomicBoolean isStarted = new AtomicBoolean( false );
-
-    private final Semaphore helixLocked = new Semaphore( 1, true );
-    private final Semaphore helixUnlocked = new Semaphore( 1, true );
 
     private final ReentrantLock lock = new ReentrantLock( true );
 
@@ -56,138 +49,107 @@ public class ClusterServiceHelix implements ClusterService {
         this.clusterName = clusterName;
         this.instanceName = instanceName;
         this.resourceName = resourceName;
-        this.messageHandlerResolver.put( messageHandlerResolver.getServiceId(), messageHandlerResolver );
-
+        addMessageHandlerResolver( messageHandlerResolver );
         this.participantManager = getZKHelixManager( clusterName, instanceName, InstanceType.PARTICIPANT, zkAddress );
+        start();
     }
 
     //TODO {porcelli} quick hack for now, the real solution would have a cluster per repo
     @Override
     public void addMessageHandlerResolver( final MessageHandlerResolver resolver ) {
-        this.messageHandlerResolver.put( resolver.getServiceId(), resolver );
+        if ( resolver != null ) {
+            this.messageHandlerResolver.put( resolver.getServiceId(), resolver );
+        }
     }
 
-    @Override
-    public void start() {
-        if ( isStarted.get() ) {
-            return;
-        }
+    private void start() {
         try {
-            this.participantManager.getMessagingService().registerMessageHandlerFactory( Message.MessageType.USER_DEFINE_MSG.toString(), new MessageHandlerResolverWrapper().convert() );
-            this.participantManager.connect();
-            internalDisablePartition();
-            this.participantManager.getStateMachineEngine().registerStateModelFactory( "LeaderStandby", new LockTransitionalFactory( helixLocked, helixUnlocked ) );
-            this.isStarted.set( true );
-            for ( final Runnable runnable : onStart ) {
-                runnable.run();
-            }
+            participantManager.getMessagingService().registerMessageHandlerFactory( Message.MessageType.USER_DEFINE_MSG.toString(), new MessageHandlerResolverWrapper().convert() );
+            participantManager.getStateMachineEngine().registerStateModelFactory( "LeaderStandby", new LockTransitionalFactory() );
+            participantManager.connect();
+            offlinePartition();
         } catch ( final Exception ex ) {
             throw new RuntimeException( ex );
         }
     }
 
-    private void waitForStart() {
-        while ( !isStarted.get() ) {
-            try {
-                Thread.sleep( 10 );
-            } catch ( InterruptedException e ) {
-                e.printStackTrace();
-            }
-        }
+    private String getNodeStatus() {
+        final String partition = resourceName + "_0";
+        final ExternalView view = participantManager.getClusterManagmentTool().getResourceExternalView( clusterName, resourceName );
+        return view.getStateMap( partition ).get( instanceName );
     }
 
     @Override
     public void dispose() {
-        if ( this.participantManager != null && this.participantManager.isConnected() ) {
-            this.participantManager.disconnect();
+        if ( participantManager != null && participantManager.isConnected() ) {
+            participantManager.disconnect();
         }
     }
 
     @Override
     public void onStart( final Runnable runnable ) {
-        if ( isStarted.get() ) {
-            runnable.run();
-        } else {
-            onStart.add( runnable );
-        }
+        runnable.run();
     }
 
     @Override
-    public boolean isInnerLocked() {
-        return lock.getHoldCount() > 1;
+    public int getHoldCount() {
+        return lock.getHoldCount();
+    }
+
+    private void offlinePartition() {
+        if ( "OFFLINE".equals( getNodeStatus() ) ) {
+            return;
+        }
+        participantManager.getClusterManagmentTool().enablePartition( false, clusterName, instanceName, resourceName, asList( resourceName + "_0" ) );
+        while ( !"OFFLINE".equals( getNodeStatus() ) ) {
+            try {
+                Thread.sleep( 10 );
+            } catch ( InterruptedException e ) {
+            }
+        }
     }
 
     private void enablePartition() {
-        try {
-            helixLocked.acquire();
-            participantManager.getClusterManagmentTool().enablePartition( true, clusterName, instanceName, resourceName, asList( resourceName + "_0" ) );
-            helixLocked.acquire();
-        } catch ( InterruptedException e ) {
-            if ( helixLocked.availablePermits() > 0 ) {
-                throw new IllegalStateException( "Couldn't enable Helix partition." );
-            }
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        } finally {
-            if ( helixUnlocked.availablePermits() == 0 ) {
-                helixUnlocked.release();
+        if ( "LEADER".equals( getNodeStatus() ) ) {
+            return;
+        }
+        participantManager.getClusterManagmentTool().enablePartition( true, clusterName, instanceName, resourceName, asList( resourceName + "_0" ) );
+        while ( !"LEADER".equals( getNodeStatus() ) ) {
+            try {
+                Thread.sleep( 10 );
+            } catch ( InterruptedException e ) {
             }
         }
     }
 
     private void disablePartition() {
-        try {
-            helixUnlocked.acquire();
-            internalDisablePartition();
-            helixUnlocked.acquire();
-        } catch ( final InterruptedException e ) {
-            if ( helixUnlocked.availablePermits() > 0 ) {
-                throw new IllegalStateException( "Couldn't disable Helix partition." );
-            }
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        } finally {
-            if ( helixLocked.availablePermits() == 0 ) {
-                helixLocked.release();
+        String nodeStatus = getNodeStatus();
+        if ( "STANDBY".equals( nodeStatus ) || "OFFLINE".equals( nodeStatus ) ) {
+            return;
+        }
+        participantManager.getClusterManagmentTool().enablePartition( false, clusterName, instanceName, resourceName, asList( resourceName + "_0" ) );
+
+        while ( !( "STANDBY".equals( nodeStatus ) || "OFFLINE".equals( nodeStatus ) ) ) {
+            try {
+                Thread.sleep( 10 );
+                nodeStatus = getNodeStatus();
+            } catch ( InterruptedException e ) {
             }
         }
-    }
-
-    private void internalDisablePartition() {
-        participantManager.getClusterManagmentTool().enablePartition( false, clusterName, instanceName, resourceName, asList( resourceName + "_0" ) );
     }
 
     @Override
     public void lock() {
-        waitForStart();
-
         lock.lock();
-
-        if ( lock.getHoldCount() > 1 ) {
-            return;
-        }
 
         enablePartition();
     }
 
     @Override
     public void unlock() {
-        waitForStart();
-
-        if ( lock.getHoldCount() > 1 ) {
-            lock.unlock();
-            return;
-        }
-
         disablePartition();
+
         lock.unlock();
-    }
-
-    @Override
-    public boolean isLocked() {
-        waitForStart();
-
-        return lock.isLocked();
     }
 
     @Override
@@ -195,8 +157,6 @@ public class ClusterServiceHelix implements ClusterService {
                                   final MessageType type,
                                   final Map<String, String> content,
                                   int timeOut ) {
-        waitForStart();
-
         participantManager.getMessagingService().sendAndWait( buildCriteria(), buildMessage( serviceId, type, content ), new org.apache.helix.messaging.AsyncCallback( timeOut ) {
             @Override
             public void onTimeOut() {
@@ -214,8 +174,6 @@ public class ClusterServiceHelix implements ClusterService {
                                   final Map<String, String> content,
                                   final int timeOut,
                                   final AsyncCallback callback ) {
-        waitForStart();
-
         int msg = participantManager.getMessagingService().sendAndWait( buildCriteria(), buildMessage( serviceId, type, content ), new org.apache.helix.messaging.AsyncCallback() {
             @Override
             public void onTimeOut() {
@@ -239,8 +197,6 @@ public class ClusterServiceHelix implements ClusterService {
     public void broadcast( final String serviceId,
                            final MessageType type,
                            final Map<String, String> content ) {
-        waitForStart();
-
         participantManager.getMessagingService().send( buildCriteria(), buildMessage( serviceId, type, content ) );
     }
 
@@ -250,8 +206,6 @@ public class ClusterServiceHelix implements ClusterService {
                            final Map<String, String> content,
                            final int timeOut,
                            final AsyncCallback callback ) {
-        waitForStart();
-
         participantManager.getMessagingService().send( buildCriteria(), buildMessage( serviceId, type, content ), new org.apache.helix.messaging.AsyncCallback() {
             @Override
             public void onTimeOut() {
@@ -273,8 +227,6 @@ public class ClusterServiceHelix implements ClusterService {
                         final String resourceId,
                         final MessageType type,
                         final Map<String, String> content ) {
-        waitForStart();
-
         participantManager.getMessagingService().send( buildCriteria( resourceId ), buildMessage( serviceId, type, content ) );
     }
 
@@ -391,6 +343,7 @@ public class ClusterServiceHelix implements ClusterService {
                 }
             };
         }
+
     }
 
     private MessageType buildMessageType( final String _type ) {
