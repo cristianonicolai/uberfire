@@ -44,6 +44,8 @@ public class TodoListScreen
 extends Composite
 implements RequiresResize {
 
+    private static final String EMPTY = "<p>-- empty --</p>";
+
     interface ViewBinder
     extends
     UiBinder<Widget, TodoListScreen> {
@@ -70,15 +72,24 @@ implements RequiresResize {
                     @Override
                     public void callback( final String response ) {
                         if ( response == null ) {
-                            markdown.setHTML("<p>-- empty --</p>");
+                            markdown.setHTML(EMPTY);
                         } else {
-                            markdown.setHTML(response);
+                            try {
+                                markdown.setHTML( parseMarkdown( response ) );
+                            } catch ( Exception e ) {
+                                markdown.setText( EMPTY );
+                                GWT.log( "Error parsing markdown content", e );
+                            }
                         }
                     }
                 } ).readAllString( o );
             }
         } ).get( "default://uf-playground/todo.md" );
     }
+
+    public static native String parseMarkdown( String content )/*-{
+      return $wnd.marked(content);
+    }-*/;
 
     @DefaultPosition
     public Position getDefaultPosition() {
