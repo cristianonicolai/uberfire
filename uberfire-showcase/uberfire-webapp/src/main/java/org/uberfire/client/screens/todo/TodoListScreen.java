@@ -31,11 +31,11 @@ import org.uberfire.client.util.Layouts;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 
-import com.github.gwtbootstrap.client.ui.TextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -44,6 +44,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class TodoListScreen
 extends Composite
 implements RequiresResize {
+
+    private static final String EMPTY = "<p>-- empty --</p>";
 
     interface ViewBinder
     extends
@@ -57,7 +59,7 @@ implements RequiresResize {
     private Caller<VFSService> vfsServices;
 
     @UiField
-    protected TextArea markdown;
+    protected HTML markdown;
 
     @PostConstruct
     public void init() {
@@ -71,15 +73,25 @@ implements RequiresResize {
                     @Override
                     public void callback( final String response ) {
                         if ( response == null ) {
-                            markdown.setText( "<p>-- empty --</p>" );
+                            markdown.setText( EMPTY );
                         } else {
-                            markdown.setText( response );
+                            try {
+                                markdown.setHTML( parseMarkdown( response ) );
+                            } catch ( Exception e ) {
+                                markdown.setText( EMPTY );
+                                GWT.log( "Error parsing markdown content", e );
+                            }
+                            
                         }
                     }
                 } ).readAllString( o );
             }
         } ).get( "default://uf-playground/todo.md" );
     }
+
+    public static native String parseMarkdown( String content )/*-{
+      return $wnd.marked(content);
+    }-*/;
 
     @DefaultPosition
     public Position getDefaultPosition() {

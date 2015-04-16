@@ -20,7 +20,7 @@
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
   <g:ResizeLayoutPanel>
-    <b:TextArea ui:field="markdown"/>
+    <g:HTML ui:field="markdown" />
   </g:ResizeLayoutPanel>
 
 </ui:UiBinder>
