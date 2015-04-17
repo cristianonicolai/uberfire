@@ -48,6 +48,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -431,7 +432,7 @@ public class ListBarWidgetImpl
         // IMPORTANT! if you change what goes in this map, update the remove(PartDefinition) method
         partContentView.put( partDefinition, panel );
 
-        final Widget title = buildTitle( view.getPresenter().getTitle() );
+        final Widget title = buildTitle( view.getPresenter().getTitle(), view.getPresenter().getTitleDecoration() );
         partTitle.put( partDefinition, title );
         title.ensureDebugId( DEBUG_TITLE_PREFIX + view.getPresenter().getTitle() );
 
@@ -449,15 +450,16 @@ public class ListBarWidgetImpl
 //        this.title.add(title);
     }
 
-    private Widget buildTitle( final String title ) {
-        return new Text(SafeHtmlUtils.htmlEscape(title));
+    private Widget buildTitle( final String title , final IsWidget titleDecoration) {
+        final String titleWidget = (titleDecoration instanceof Image) ? titleDecoration.toString() : "";
+        return new Text(SafeHtmlUtils.htmlEscape(titleWidget + " " + title));
     }
 
     @Override
     public void changeTitle( final PartDefinition part,
                              final String title,
                              final IsWidget titleDecoration ) {
-        final Widget _title = buildTitle( title );
+        final Widget _title = buildTitle( title, titleDecoration );
         partTitle.put( part, _title );
         if ( isDndEnabled ) {
             dndManager.makeDraggable( partContentView.get( part ), _title );
