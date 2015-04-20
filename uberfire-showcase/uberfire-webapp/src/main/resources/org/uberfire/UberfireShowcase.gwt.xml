@@ -4,6 +4,7 @@
 <module>
   <inherits name="org.uberfire.UberfireClientAll"/>
   <inherits name="org.uberfire.client.views.Bootstrap2"/>
+  <inherits name="org.uberfire.client.views.PatternFly"/>
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css'/>
