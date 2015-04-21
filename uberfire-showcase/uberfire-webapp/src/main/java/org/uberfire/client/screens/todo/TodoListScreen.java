@@ -16,10 +16,14 @@
 
 package org.uberfire.client.screens.todo;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.PanelBody;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.uberfire.backend.vfs.Path;
@@ -31,13 +35,9 @@ import org.uberfire.client.util.Layouts;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.Widget;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 @Dependent
 @WorkbenchScreen(identifier = "TodoListScreen", preferredWidth = 400)
@@ -57,7 +57,7 @@ implements RequiresResize {
     private Caller<VFSService> vfsServices;
 
     @UiField
-    protected TextArea markdown;
+    protected PanelBody markdown;
 
     @PostConstruct
     public void init() {
@@ -71,9 +71,9 @@ implements RequiresResize {
                     @Override
                     public void callback( final String response ) {
                         if ( response == null ) {
-                            markdown.setText( "<p>-- empty --</p>" );
+                            markdown.add(new HTML("<p>-- empty --</p>"));
                         } else {
-                            markdown.setText( response );
+                            markdown.add(new HTML(response));
                         }
                     }
                 } ).readAllString( o );
