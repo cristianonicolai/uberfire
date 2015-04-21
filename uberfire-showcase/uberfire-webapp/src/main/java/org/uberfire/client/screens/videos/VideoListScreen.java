@@ -16,11 +16,12 @@
 
 package org.uberfire.client.screens.videos;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import org.gwtbootstrap3.client.ui.Panel;
-import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -62,23 +63,22 @@ public class VideoListScreen {
 
             final Panel panel = new Panel();
             final PanelHeader panelHeader = new PanelHeader();
-            panelHeader.setText(video.getName());
+            panelHeader.add(new Heading(HeadingSize.H3, video.getName()));
 
             final PanelBody panelBody = new PanelBody();
-            panelBody.add( new Paragraph(video.getDescription()) );
-//            final Hero infoCube = new Hero();
-//            final Heading heading = new Heading( 2, video.getName() );
-//            final Paragraph paragraph = new Paragraph( video.getDescription() );
-//            infoCube.add( heading );
-//            infoCube.add( paragraph );
-//            infoCube.addDomHandler( new ClickHandler() {
-//                @Override
-//                public void onClick( final ClickEvent e ) {
-//                    event.fire( video );
-//                }
-//            }, ClickEvent.getType() );
+            panelBody.add(new Paragraph(video.getDescription()));
+
+            final PanelFooter panelFooter = new PanelFooter();
+            panelFooter.add(new Button("Play", new ClickHandler() {
+                @Override
+                public void onClick(final ClickEvent e) {
+                    event.fire(video);
+                }
+            }));
+
             panel.add(panelHeader);
             panel.add(panelBody);
+            panel.add(panelFooter);
 
             widgets.add( panel );
         }
