@@ -274,6 +274,7 @@
           <disableCastChecking>true</disableCastChecking>
           <runTarget>showcase.html</runTarget>
           <hostedWebapp>src/main/webapp</hostedWebapp>
+          <module>org.uberfire.FastCompiledUberfireShowcase</module>
           <compileSourcesArtifacts>
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
