@@ -16,23 +16,22 @@
 
 package org.uberfire.client.screens.videos;
 
-import java.util.LinkedList;
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import com.github.gwtbootstrap.client.ui.Heading;
-import com.github.gwtbootstrap.client.ui.Hero;
-import com.github.gwtbootstrap.client.ui.Paragraph;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.events.YouTubeVideo;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.LinkedList;
+import java.util.List;
 
 @Dependent
 @WorkbenchScreen(identifier = "YouTubeVideos")
@@ -61,19 +60,27 @@ public class VideoListScreen {
 
         for ( final YouTubeVideo video : VIDEOS ) {
 
-            final Hero infoCube = new Hero();
-            final Heading heading = new Heading( 2, video.getName() );
-            final Paragraph paragraph = new Paragraph( video.getDescription() );
-            infoCube.add( heading );
-            infoCube.add( paragraph );
-            infoCube.addDomHandler( new ClickHandler() {
-                @Override
-                public void onClick( final ClickEvent e ) {
-                    event.fire( video );
-                }
-            }, ClickEvent.getType() );
+            final Panel panel = new Panel();
+            final PanelHeader panelHeader = new PanelHeader();
+            panelHeader.setText(video.getName());
 
-            widgets.add( infoCube );
+            final PanelBody panelBody = new PanelBody();
+            panelBody.add( new Paragraph(video.getDescription()) );
+//            final Hero infoCube = new Hero();
+//            final Heading heading = new Heading( 2, video.getName() );
+//            final Paragraph paragraph = new Paragraph( video.getDescription() );
+//            infoCube.add( heading );
+//            infoCube.add( paragraph );
+//            infoCube.addDomHandler( new ClickHandler() {
+//                @Override
+//                public void onClick( final ClickEvent e ) {
+//                    event.fire( video );
+//                }
+//            }, ClickEvent.getType() );
+            panel.add(panelHeader);
+            panel.add(panelBody);
+
+            widgets.add( panel );
         }
 
         return widgets;
