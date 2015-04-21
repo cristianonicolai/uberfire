@@ -7,13 +7,10 @@
 
   <source path="pfly"/>
 
-  <public path="pfly/bower_components/patternfly/dist" >
-    <include name="css/*.css"/>
-    <include name="js/*.js"/>
-    <include name="fonts/*"/>
-    <include name="img/*"/>
+  <public path="pfly/bower_components" >
+    <include name="patternfly/**"/>
   </public>
 
-  <stylesheet src="css/patternfly.min.css"/>
+  <stylesheet src="patternfly/dist/css/patternfly.min.css"/>
 
 </module>
