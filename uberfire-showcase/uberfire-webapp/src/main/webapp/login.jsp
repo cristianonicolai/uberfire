@@ -24,16 +24,16 @@
 
 <body>
 <span id="badge">
-      <img src="org.uberfire.UberfireShowcase/images/uf_logo.png" alt="UberFire Logo" title="Powered By Uberfire"/>
-    </span>
+  <img src="org.uberfire.UberfireShowcase/images/uf_logo.png" alt="UberFire Logo" title="Powered By Uberfire"/>
+</span>
 <div class="container">
   <div class="row">
     <div class="col-sm-12">
       <div id="brand">
-        <img src="org.uberfire.UberfireShowcase/images/brand.svg" alt="Uberfire UI Framework">
+        <img src="org.uberfire.UberfireShowcase/images/uf.png" alt="Uberfire UI Framework">
       </div>
     </div>
-    <div class="col-sm-7 col-md-6 col-lg-5 login">
+    <div class="col-sm-5 col-md-4 col-lg-3 login">
       <% if (request.getParameter( FormAuthenticationScheme.LOGIN_ERROR_QUERY_PARAM ) != null) { %>
         <div class="alert alert-danger">
         <span class="pficon-layered">
@@ -47,7 +47,7 @@
         <div class="form-group">
           <label for="uf_username" class="col-sm-2 col-md-2 control-label">Username</label>
           <div class="col-sm-10 col-md-10">
-            <input type="text" class="form-control" id="uf_username" name="uf_username" placeholder="admin" tabindex="1">
+            <input type="text" class="form-control" id="uf_username" name="uf_username" placeholder="admin" tabindex="1" autofocus>
           </div>
         </div>
         <div class="form-group">
