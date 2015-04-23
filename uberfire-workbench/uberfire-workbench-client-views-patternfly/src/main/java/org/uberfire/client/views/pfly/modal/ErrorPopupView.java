@@ -19,6 +19,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 
@@ -40,8 +41,8 @@ public class ErrorPopupView extends Composite implements ErrorPopupPresenter.Vie
                              final Command afterClose ) {
 
         Bs3Modal modal = modalFactory.get();
-        modal.setTitle( "Error" );
-        modal.setContent( new HTML( msg ) );
+        modal.setModalTitle("Error");
+        modal.setContent( new HTML(SafeHtmlUtils.fromString(msg)) );
         modal.show( afterShow, afterClose );
     }
 
