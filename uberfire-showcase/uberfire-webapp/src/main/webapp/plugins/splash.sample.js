@@ -6,7 +6,7 @@ $registerSplashScreen({
         return "Cool Home Splash " + Math.floor(Math.random() * 10);
     },
     on_close: function () {
-        alert("this is a close Splash alert!");
+        console.log("this is a close Splash alert!");
     },
     display_next_time: true,
     interception_points: ["Home"]
