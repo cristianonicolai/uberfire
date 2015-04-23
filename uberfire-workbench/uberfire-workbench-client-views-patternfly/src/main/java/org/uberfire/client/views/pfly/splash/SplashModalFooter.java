@@ -37,7 +37,7 @@ public class SplashModalFooter extends Composite {
     private ParameterizedCommand<Boolean> closeCommand;
 
     @Inject @DataField
-    private CheckBox dontShowAgain;
+    private CheckBox show;
 
     @Inject @DataField
     private Button closeButton;
@@ -45,18 +45,18 @@ public class SplashModalFooter extends Composite {
     @PostConstruct
     private void setup() {
         closeButton.ensureDebugId( "SplashModalFooter-close" );
-        dontShowAgain.ensureDebugId( "SplashModalFooter-dontShowAgain" );
+        show.ensureDebugId( "SplashModalFooter-dontShowAgain" );
     }
 
     @EventHandler("closeButton")
     public void onOKButtonClick( final ClickEvent e ) {
         if ( closeCommand != null ) {
-            closeCommand.execute( !dontShowAgain.getValue() );
+            closeCommand.execute( !show.getValue() );
         }
     }
 
     public boolean getShowAgain() {
-        return !dontShowAgain.getValue();
+        return !show.getValue();
     }
 
     /**

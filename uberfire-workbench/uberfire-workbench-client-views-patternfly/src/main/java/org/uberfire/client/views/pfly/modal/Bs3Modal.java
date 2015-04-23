@@ -1,10 +1,10 @@
 package org.uberfire.client.views.pfly.modal;
 
-import static org.uberfire.commons.validation.PortablePreconditions.*;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
@@ -13,32 +13,27 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.Attributes;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.IsWidget;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+
+import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
 
 /**
  * A modal dialog that floats above the workbench. Each instance can only be shown once.
  */
-@Templated
+@Dependent
 public class Bs3Modal extends Composite {
 
-    @Inject @DataField
-    private Modal modal;
+    private final Modal modal = new Modal();
 
-    @Inject @DataField("modal-body")
-    private ModalBody body;
+    private final ModalBody body = new ModalBody();
 
-    @Inject @DataField("modal-footer")
-    private ModalFooter footer;
-
-    @Inject @DataField("modal-ok-button")
-    private Button okButton;
+    private final ModalFooter footer = new ModalFooter();
 
     /**
      * Used for enforcing the "only show one time" rule.
@@ -53,7 +48,20 @@ public class Bs3Modal extends Composite {
 
     @PostConstruct
     void setup() {
-        modal.setDataBackdrop( ModalBackdrop.STATIC );
+        modal.add(body);
+        modal.add(footer);
+
+        modal.setDataBackdrop(ModalBackdrop.STATIC);
+        modal.setFade(true);
+        modal.getElement().setAttribute(Attributes.ROLE, "dialog");
+        modal.getElement().setAttribute(Attributes.TABINDEX, "-1");
+
+        final Button close = new Button("OK");
+        close.getElement().setAttribute(Attributes.DATA_DISMISS, "modal");
+        footer.add(close);
+
+        final SimplePanel panel = new SimplePanel( modal );
+        initWidget( panel );
     }
 
     /**
@@ -100,6 +108,10 @@ public class Bs3Modal extends Composite {
     public void setContent(IsWidget content) {
         body.clear();
         body.add(content);
+    }
+
+    public void setModalTitle(final String title){
+        modal.setTitle(SafeHtmlUtils.htmlEscape(title));
     }
 
     /**
