@@ -28,6 +28,7 @@ import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.service.AuthenticationService;
+import org.uberfire.client.menu.CustomSplashHelp;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
@@ -113,8 +114,8 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu("Screens")
                 .withItems(getScreens())
                 .endMenu()
-//                .newTopLevelCustomMenu(manager.lookupBean(CustomSplashHelp.class).getInstance())
-//                .endMenu()
+                .newTopLevelCustomMenu(manager.lookupBean(CustomSplashHelp.class).getInstance())
+                .endMenu()
 //                .newTopLevelMenu("Logout 1")
 //                .position(MenuPosition.RIGHT)
 //                .respondsWith( new Command() {
@@ -127,11 +128,11 @@ public class ShowcaseEntryPoint {
                  .newTopLevelCustomMenu(
                          UtilityMenuBuilder.newUtilityMenu("Status")
                                  .respondsWith(new Command() {
-                                        @Override
-                                        public void execute() {
-                                            Window.alert("Hello from status!");
-                                        }
-                                    }))
+                                     @Override
+                                     public void execute() {
+                                         Window.alert("Hello from status!");
+                                     }
+                                 }))
                 .endMenu()
                 .newTopLevelCustomMenu(UserMenuBuilder.withUserMenu())
                 .endMenu()
