@@ -19,73 +19,68 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:tb="urn:import:org.gwtbootstrap3.client.ui"
              xmlns:uf="urn:import:org.uberfire.client.workbench.widgets.listbar"
-             xmlns:ufm="urn:import:org.uberfire.client.views.pfly.maximize">
+             xmlns:ufm="urn:import:org.uberfire.client.views.pfly.maximize"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:h="urn:import:org.gwtbootstrap3.client.ui.html">
 
   <ui:with field="res" type="org.uberfire.client.resources.WorkbenchResources"/>
 
   <ui:style>
-    .title {
-      font-size: 18px;
-    }
-
-    .better_margin {
-      padding-right: 10px;
-    }
-
-    .pull-right {
-      float: right;
-    }
-
-    .inline {
-      display: inline;
-    }
-
-    .fill-parent {
-      position: relative;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .title-bar-button {
-      color: rgb(51, 51, 51);
+    .dropdown {
+      background: none;
+      border: none;
+      box-shadow: none;
+      min-width: 20px;
+      max-width: 20px;
+      text-align: center;
       padding-left: 5px;
-      padding-right: 5px;
-      text-decoration: none;
     }
 
-    .relative-position {
-      position: relative;
+    .dropdown li:hover {
+      cursor: pointer;
     }
   </ui:style>
 
   <uf:ResizeFocusPanel ui:field="container">
-    <g:FlowPanel styleName="{style.fill-parent}">
-      <g:FlowPanel styleName="{res.CSS.listbar}" ui:field="header">
+    <b:Panel>
+      <b:PanelHeader ui:field="header">
+        <b:DropDown pull="RIGHT" ui:field="dropdown" visible="false">
+          <b:Anchor dataToggle="DROPDOWN" icon="ELLIPSIS_H" iconSize="LARGE" addStyleNames="dropdown-toggle"/>
+          <b:DropDownMenu addStyleNames="{style.dropdown}">
+            <ufm:MaximizeToggleButton ui:field="maximizeButton" />
+            <b:ListItem ui:field="drag" ><b:Icon type="ARROWS" size="LARGE"/></b:ListItem>
+            <b:ListItem ui:field="closeButton" ><b:Icon type="TIMES" size="LARGE"/></b:ListItem>
+          </b:DropDownMenu>
+        </b:DropDown>
+        <b:Heading size="H3" ui:field="title"/>
+      </b:PanelHeader>
+      <b:PanelBody ui:field="content" />
+    </b:Panel>
+    <!--<g:FlowPanel styleName="{style.fill-parent}">-->
+      <!--<g:FlowPanel styleName="{res.CSS.listbar}" ui:field="header">-->
 
-        <g:FlowPanel styleName="{style.pull-right} {style.better_margin}" ui:field="menuArea">
-          <g:FlowPanel styleName="{style.inline} {style.better_margin}" ui:field="contextMenu"/>
-          <tb:ButtonGroup styleName="{style.inline} {style.relative-position}" ui:field="dropdownCaretContainer">
-            <tb:Anchor styleName="{style.title-bar-button}" ui:field="dropdownCaret" icon="ANGLE_DOWN" dataToggle="DROPDOWN"/>
-            <tb:DropDownMenu ui:field="dropdownMenuItems" />
-          </tb:ButtonGroup>
-          <tb:ButtonGroup styleName="{style.inline}" ui:field="closeButtonContainer">
-            <tb:Anchor styleName="{style.title-bar-button}" ui:field="closeButton" icon="TIMES"/>
-          </tb:ButtonGroup>
-          <tb:ButtonGroup>
-            <ufm:MaximizeToggleButton ui:field="maximizeButton"/>
-          </tb:ButtonGroup>
-        </g:FlowPanel>
+        <!--<g:FlowPanel styleName="{style.pull-right} {style.better_margin}" ui:field="menuArea">-->
+          <!--<g:FlowPanel styleName="{style.inline} {style.better_margin}" ui:field="contextMenu"/>-->
+          <!--<tb:ButtonGroup styleName="{style.inline} {style.relative-position}" ui:field="dropdownCaretContainer">-->
+            <!--<tb:Anchor styleName="{style.title-bar-button}" ui:field="dropdownCaret" icon="ANGLE_DOWN" dataToggle="DROPDOWN"/>-->
+            <!--<tb:DropDownMenu ui:field="dropdownMenuItems" />-->
+          <!--</tb:ButtonGroup>-->
+          <!--<tb:ButtonGroup styleName="{style.inline}" ui:field="closeButtonContainer">-->
+            <!--<tb:Anchor styleName="{style.title-bar-button}" ui:field="closeButton" icon="TIMES"/>-->
+          <!--</tb:ButtonGroup>-->
+          <!--<tb:ButtonGroup>-->
+            <!--<ufm:MaximizeToggleButton ui:field="maximizeButton"/>-->
+          <!--</tb:ButtonGroup>-->
+        <!--</g:FlowPanel>-->
 
-        <g:FlowPanel styleName="{style.inline}">
-          <tb:Button ui:field="contextDisplay" size="EXTRA_SMALL" icon="REORDER"/>
-          <g:SimplePanel styleName="{style.inline} {style.title}" ui:field="title"/>
-        </g:FlowPanel>
+        <!--<g:FlowPanel styleName="{style.inline}">-->
+          <!--<tb:Button ui:field="contextDisplay" size="EXTRA_SMALL" icon="REORDER"/>-->
+          <!--<g:SimplePanel styleName="{style.inline} {style.title}" ui:field="title"/>-->
+        <!--</g:FlowPanel>-->
 
-      </g:FlowPanel>
-      <g:FlowPanel ui:field="content"/>
-    </g:FlowPanel>
+      <!--</g:FlowPanel>-->
+      <!--<g:FlowPanel ui:field="content"/>-->
+    <!--</g:FlowPanel>-->
   </uf:ResizeFocusPanel>
 
 </ui:UiBinder> 

@@ -15,49 +15,24 @@
  */
 package org.uberfire.client.views.pfly.listbar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Anchor;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
+import com.google.gwt.user.client.ui.*;
+import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ButtonGroup;
-import org.gwtbootstrap3.client.ui.DropDownMenu;
-import org.gwtbootstrap3.client.ui.NavbarLink;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.ioc.client.container.IOCResolutionException;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.util.Layouts;
@@ -66,7 +41,6 @@ import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
 import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
-import org.uberfire.client.workbench.widgets.dnd.DragArea;
 import org.uberfire.client.workbench.widgets.dnd.WorkbenchDragAndDropManager;
 import org.uberfire.client.workbench.widgets.listbar.ListBarWidget;
 import org.uberfire.client.workbench.widgets.listbar.ListbarPreferences;
@@ -75,16 +49,20 @@ import org.uberfire.commons.data.Pair;
 import org.uberfire.mvp.Command;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.PartDefinition;
-import org.uberfire.workbench.model.menu.EnabledStateChangeListener;
-import org.uberfire.workbench.model.menu.MenuCustom;
-import org.uberfire.workbench.model.menu.MenuGroup;
+import org.uberfire.workbench.model.menu.*;
 import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.MenuItemCommand;
 
-import static com.google.gwt.dom.client.Style.Display.*;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import java.util.*;
+
+import static com.google.gwt.dom.client.Style.Display.BLOCK;
+import static com.google.gwt.dom.client.Style.Display.NONE;
 
 /**
- * Implementation of ListBarWidget based on GWTBootstrap 2 components.
+ * Implementation of ListBarWidget based on PatternFly components.
  */
 @Dependent
 public class ListBarWidgetImpl
@@ -127,32 +105,35 @@ public class ListBarWidgetImpl
     FocusPanel container;
 
     @UiField
-    SimplePanel title;
+    Heading title;
+
+//    @UiField
+//    Button contextDisplay;
 
     @UiField
-    Button contextDisplay;
+    PanelHeader header;
+
+//    @UiField
+//    FlowPanel contextMenu;
+//
+    @UiField
+    ListItem closeButton;
 
     @UiField
-    FlowPanel header;
-
-    @UiField
-    FlowPanel contextMenu;
-
-    @UiField
-    Anchor closeButton;
-
-    @UiField
-    Anchor dropdownCaret;
-
-    @UiField
-    ButtonGroup dropdownCaretContainer;
-
-    @UiField
-    DropDownMenu dropdownMenuItems;
-
-    @UiField
-    ButtonGroup closeButtonContainer;
-
+    ListItem drag;
+//
+//    @UiField
+//    Anchor dropdownCaret;
+//
+//    @UiField
+//    ButtonGroup dropdownCaretContainer;
+//
+//    @UiField
+//    DropDownMenu dropdownMenuItems;
+//
+//    @UiField
+//    ButtonGroup closeButtonContainer;
+//
     @UiField
     MaximizeToggleButton maximizeButton;
 
@@ -160,10 +141,13 @@ public class ListBarWidgetImpl
     MaximizeToggleButtonPresenter maximizeButtonPresenter;
 
     @UiField
-    FlowPanel content;
+    PanelBody content;
 
     @UiField
-    FlowPanel menuArea;
+    DropDown dropdown;
+
+//    @UiField
+//    FlowPanel menuArea;
 
     WorkbenchPanelPresenter presenter;
 
@@ -180,17 +164,17 @@ public class ListBarWidgetImpl
     @PostConstruct
     void postConstruct() {
         initWidget( uiBinder.createAndBindUi( this ) );
-        maximizeButton.setVisible( false );
+//        maximizeButton.setVisible( false );
         maximizeButtonPresenter = new MaximizeToggleButtonPresenter( maximizeButton );
         setup( true, true );
 
         // default patternfly dropdown is left-aligned with the trigger button. We need right alignment.
-        dropdownMenuItems.getElement().getStyle().setProperty( "left", "auto" );
-        dropdownMenuItems.getElement().getStyle().setProperty( "right", "0px" );
+//        dropdownMenuItems.getElement().getStyle().setProperty( "left", "auto" );
+//        dropdownMenuItems.getElement().getStyle().setProperty( "right", "0px" );
 
         // the text shows up too low in the titlebar by default
-        title.getElement().getStyle().setPosition( Position.RELATIVE );
-        title.getElement().getStyle().setTop( -5, Unit.PX );
+//        title.getElement().getStyle().setPosition( Position.RELATIVE );
+//        title.getElement().getStyle().setTop( -5, Unit.PX );
 
         Layouts.setToFillParent( this );
         scheduleResize();
@@ -201,20 +185,36 @@ public class ListBarWidgetImpl
                        boolean isDndEnabled ) {
         this.isMultiPart = isMultiPart;
         this.isDndEnabled = isDndEnabled;
-        this.menuArea.setVisible( false );
 
+        this.container.addMouseOutHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                dropdown.removeStyleName("open");
+                dropdown.setVisible(false);
+            }
+        });
+
+        this.container.addMouseOverHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                dropdown.setVisible(true);
+            }
+        });
+//        this.menuArea.setVisible( false );
+        GWT.log("isDndEnabled: " + isDndEnabled);
+        GWT.log("isMultiPart: " + isMultiPart);
         if ( isMultiPart ) {
-            closeButton.addClickHandler( new ClickHandler() {
+            closeButton.addDomHandler(new ClickHandler() {
                 @Override
-                public void onClick( ClickEvent event ) {
-                    if ( currentPart != null ) {
-                        panelManager.closePart( currentPart.getK1() );
+                public void onClick(ClickEvent event) {
+                    if (currentPart != null) {
+                        panelManager.closePart(currentPart.getK1());
                     }
                 }
-            } );
+            }, ClickEvent.getType());
         } else {
-            dropdownCaretContainer.setVisible( false );
-            closeButtonContainer.setVisible( false );
+//            dropdownCaretContainer.setVisible( false );
+//            closeButtonContainer.setVisible( false );
         }
 
         container.addFocusHandler( new FocusHandler() {
@@ -226,14 +226,14 @@ public class ListBarWidgetImpl
             }
         } );
 
-        if ( isPropertyListbarContextDisable() ) {
-            contextDisplay.removeFromParent();
-        }
+//        if ( isPropertyListbarContextDisable() ) {
+//            contextDisplay.removeFromParent();
+//        }
 
-        content.getElement().getStyle().setPosition( Position.RELATIVE );
-        content.getElement().getStyle().setTop( 0.0, Unit.PX );
-        content.getElement().getStyle().setLeft( 0.0, Unit.PX );
-        content.getElement().getStyle().setWidth( 100.0, Unit.PCT );
+//        content.getElement().getStyle().setPosition( Position.RELATIVE );
+//        content.getElement().getStyle().setTop( 0.0, Unit.PX );
+//        content.getElement().getStyle().setLeft( 0.0, Unit.PX );
+//        content.getElement().getStyle().setWidth( 100.0, Unit.PCT );
         // height is calculated and set in onResize()
     }
 
@@ -258,12 +258,12 @@ public class ListBarWidgetImpl
     @Override
     public void setExpanderCommand( final Command command ) {
         if ( !isPropertyListbarContextDisable() ) {
-            contextDisplay.addClickHandler( new ClickHandler() {
-                @Override
-                public void onClick( ClickEvent event ) {
-                    command.execute();
-                }
-            } );
+//            contextDisplay.addClickHandler( new ClickHandler() {
+//                @Override
+//                public void onClick( ClickEvent event ) {
+//                    command.execute();
+//                }
+//            } );
         }
     }
 
@@ -279,8 +279,8 @@ public class ListBarWidgetImpl
 
     @Override
     public void clear() {
-        contextMenu.clear();
-        menuArea.setVisible( false );
+//        contextMenu.clear();
+//        menuArea.setVisible( false );
         title.clear();
         content.clear();
 
@@ -288,7 +288,7 @@ public class ListBarWidgetImpl
         partContentView.clear();
         partTitle.clear();
         currentPart = null;
-        dropdownMenuItems.clear();
+//        dropdownMenuItems.clear();
     }
 
     @Override
@@ -299,7 +299,7 @@ public class ListBarWidgetImpl
             return;
         }
 
-        menuArea.setVisible( true );
+//        menuArea.setVisible( true );
         parts.add( partDefinition );
 
         final FlowPanel panel = new FlowPanel();
@@ -314,8 +314,9 @@ public class ListBarWidgetImpl
         partTitle.put( partDefinition, title );
         title.ensureDebugId( DEBUG_TITLE_PREFIX + view.getPresenter().getTitle() );
 
+        GWT.log("addPart isDndEnabled: " + isDndEnabled);
         if ( isDndEnabled ) {
-            dndManager.makeDraggable( view, title );
+            dndManager.makeDraggable( view, drag );
         }
 
         scheduleResize();
@@ -329,16 +330,17 @@ public class ListBarWidgetImpl
     }
 
     private Widget buildTitle( final String title ) {
-        final SpanElement spanElement = Document.get().createSpanElement();
-        spanElement.getStyle().setWhiteSpace( Style.WhiteSpace.NOWRAP );
-        spanElement.getStyle().setOverflow( Style.Overflow.HIDDEN );
-        spanElement.getStyle().setTextOverflow( Style.TextOverflow.ELLIPSIS );
-        spanElement.getStyle().setDisplay( BLOCK );
-        spanElement.setInnerText( title.replaceAll( " ", "\u00a0" ) );
-
-        return new DragArea() {{
-            add( spanElement );
-        }};
+//        final SpanElement spanElement = Document.get().createSpanElement();
+//        spanElement.getStyle().setWhiteSpace( Style.WhiteSpace.NOWRAP );
+//        spanElement.getStyle().setOverflow( Style.Overflow.HIDDEN );
+//        spanElement.getStyle().setTextOverflow( Style.TextOverflow.ELLIPSIS );
+//        spanElement.getStyle().setDisplay( BLOCK );
+//        spanElement.setInnerText( title.replaceAll( " ", "\u00a0" ) );
+//
+//        return new DragArea() {{
+//            add( spanElement );
+//        }};
+        return new Text(SafeHtmlUtils.htmlEscape(title));
     }
 
     @Override
@@ -389,15 +391,15 @@ public class ListBarWidgetImpl
     private void setupDropdown() {
         if ( isMultiPart ) {
 //            dropdownCaret.setPull( Pull.RIGHT );
-            dropdownCaretContainer.setVisible( true );
+//            dropdownCaretContainer.setVisible( true );
             refillPartChooserList();
         } else {
-            dropdownCaretContainer.setVisible( false );
+//            dropdownCaretContainer.setVisible( false );
         }
     }
 
     private void setupContextMenu() {
-        contextMenu.clear();
+//        contextMenu.clear();
         final WorkbenchPartPresenter.View part = (WorkbenchPartPresenter.View) currentPart.getK2().getWidget( 0 );
         if ( part.getPresenter().getMenus() != null && part.getPresenter().getMenus().getItems().size() > 0 ) {
             for ( final MenuItem menuItem : part.getPresenter().getMenus().getItems() ) {
@@ -405,7 +407,7 @@ public class ListBarWidgetImpl
                 if ( result != null ) {
                     final ButtonGroup bg = new ButtonGroup();
                     bg.add( result );
-                    contextMenu.add( bg );
+//                    contextMenu.add( bg );
                 }
             }
         }
@@ -607,11 +609,11 @@ public class ListBarWidgetImpl
      * parts.
      */
     private void refillPartChooserList() {
-        dropdownMenuItems.clear();
+//        dropdownMenuItems.clear();
         if ( currentPart != null ) {
             final String ctitle = ( (WorkbenchPartPresenter.View) partContentView.get( currentPart.getK1() ).getWidget( 0 ) ).getPresenter().getTitle();
             final AnchorListItem currentPartEntry = new AnchorListItem( ctitle );
-            dropdownMenuItems.add( currentPartEntry );
+//            dropdownMenuItems.add( currentPartEntry );
 
             for ( final PartDefinition part : parts ) {
                 final String title = ( (WorkbenchPartPresenter.View) partContentView.get( part ).getWidget( 0 ) ).getPresenter().getTitle();
@@ -622,7 +624,7 @@ public class ListBarWidgetImpl
                         selectPart( part );
                     }
                 } );
-                dropdownMenuItems.add( selectPartEntry );
+//                dropdownMenuItems.add( selectPartEntry );
             }
         }
     }

@@ -2,33 +2,35 @@ package org.uberfire.client.views.pfly.maximize;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.ListItem;
+import org.gwtbootstrap3.client.ui.constants.IconSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.uberfire.client.resources.i18n.WorkbenchConstants;
 import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
 import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter.View;
 import org.uberfire.mvp.Command;
 
-import static org.uberfire.commons.validation.PortablePreconditions.*;
+import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
 
-public class MaximizeToggleButton extends Button implements View {
+public class MaximizeToggleButton extends ListItem implements View {
 
     private MaximizeToggleButtonPresenter presenter;
     private boolean maximized;
     private Command maximizeCommand;
     private Command unmaximizeCommand;
+    private Icon icon = new Icon();
 
     public MaximizeToggleButton() {
-        setIcon( IconType.CHEVRON_UP );
-        setSize( ButtonSize.SMALL );
-        setTitle( WorkbenchConstants.INSTANCE.maximizePanel() );
-        addClickHandler( new ClickHandler() {
+        setMaximized(maximized);
+        addDomHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void onClick(ClickEvent event) {
                 presenter.handleClick();
             }
-        } );
+        }, ClickEvent.getType());
+        icon.setSize(IconSize.LARGE);
+        add(icon);
     }
 
     @Override
@@ -101,11 +103,11 @@ public class MaximizeToggleButton extends Button implements View {
     public void setMaximized( boolean maximized ) {
         this.maximized = maximized;
         if ( maximized ) {
-            setIcon( IconType.CHEVRON_DOWN );
+            icon.setType(IconType.COMPRESS);
             setTitle( WorkbenchConstants.INSTANCE.minimizePanel() );
         } else {
-            setIcon( IconType.CHEVRON_UP );
-            setTitle( WorkbenchConstants.INSTANCE.maximizePanel() );
+            icon.setType(IconType.EXPAND);
+            setTitle(WorkbenchConstants.INSTANCE.maximizePanel());
         }
     }
 }
