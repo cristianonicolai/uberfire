@@ -26,18 +26,15 @@
   <ui:with field="res" type="org.uberfire.client.resources.WorkbenchResources"/>
 
   <ui:style>
-    .dropdown {
-      background: none;
-      border: none;
-      box-shadow: none;
-      min-width: 20px;
-      max-width: 20px;
+    .dropdown-menu {
+      min-width: 25px;
       text-align: center;
-      padding-left: 5px;
+      margin-top: 5px;
+      margin-right: -10px;
     }
 
-    .dropdown li:hover {
-      cursor: pointer;
+    .dropdown {
+      padding-right: 15px;
     }
   </ui:style>
 
@@ -45,11 +42,11 @@
     <b:Panel>
       <b:PanelHeader ui:field="header">
         <b:DropDown pull="RIGHT" ui:field="dropdown" visible="false">
-          <b:Anchor dataToggle="DROPDOWN" icon="ELLIPSIS_H" iconSize="LARGE" addStyleNames="dropdown-toggle"/>
-          <b:DropDownMenu addStyleNames="{style.dropdown}">
+          <b:Anchor dataToggle="DROPDOWN" addStyleNames="dropdown-toggle caret {style.dropdown}" />
+          <b:DropDownMenu addStyleNames="{style.dropdown-menu} dropdown-menu-right">
             <ufm:MaximizeToggleButton ui:field="maximizeButton" />
-            <b:ListItem ui:field="drag" ><b:Icon type="ARROWS" size="LARGE"/></b:ListItem>
-            <b:ListItem ui:field="closeButton" ><b:Icon type="TIMES" size="LARGE"/></b:ListItem>
+            <b:AnchorListItem ui:field="drag" icon="ARROWS" iconSize="LARGE" />
+            <b:AnchorListItem ui:field="closeButton" icon="TIMES" iconSize="LARGE" />
           </b:DropDownMenu>
         </b:DropDown>
         <b:Heading size="H3" ui:field="title"/>

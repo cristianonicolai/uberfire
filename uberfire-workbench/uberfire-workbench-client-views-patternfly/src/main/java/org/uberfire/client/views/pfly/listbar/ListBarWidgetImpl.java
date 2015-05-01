@@ -117,10 +117,10 @@ public class ListBarWidgetImpl
 //    FlowPanel contextMenu;
 //
     @UiField
-    ListItem closeButton;
+    AnchorListItem closeButton;
 
     @UiField
-    ListItem drag;
+    AnchorListItem drag;
 //
 //    @UiField
 //    Anchor dropdownCaret;

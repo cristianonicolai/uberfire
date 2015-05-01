@@ -2,8 +2,7 @@ package org.uberfire.client.views.pfly.maximize;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import org.gwtbootstrap3.client.ui.Icon;
-import org.gwtbootstrap3.client.ui.ListItem;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.constants.IconSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.uberfire.client.resources.i18n.WorkbenchConstants;
@@ -13,13 +12,12 @@ import org.uberfire.mvp.Command;
 
 import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
 
-public class MaximizeToggleButton extends ListItem implements View {
+public class MaximizeToggleButton extends AnchorListItem implements View {
 
     private MaximizeToggleButtonPresenter presenter;
     private boolean maximized;
     private Command maximizeCommand;
     private Command unmaximizeCommand;
-    private Icon icon = new Icon();
 
     public MaximizeToggleButton() {
         setMaximized(maximized);
@@ -29,8 +27,7 @@ public class MaximizeToggleButton extends ListItem implements View {
                 presenter.handleClick();
             }
         }, ClickEvent.getType());
-        icon.setSize(IconSize.LARGE);
-        add(icon);
+        setIconSize(IconSize.LARGE);
     }
 
     @Override
@@ -103,10 +100,10 @@ public class MaximizeToggleButton extends ListItem implements View {
     public void setMaximized( boolean maximized ) {
         this.maximized = maximized;
         if ( maximized ) {
-            icon.setType(IconType.COMPRESS);
+            setIcon(IconType.COMPRESS);
             setTitle( WorkbenchConstants.INSTANCE.minimizePanel() );
         } else {
-            icon.setType(IconType.EXPAND);
+            setIcon(IconType.EXPAND);
             setTitle(WorkbenchConstants.INSTANCE.maximizePanel());
         }
     }
