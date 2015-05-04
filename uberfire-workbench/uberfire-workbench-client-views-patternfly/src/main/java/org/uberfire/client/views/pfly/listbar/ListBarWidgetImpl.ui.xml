@@ -46,12 +46,19 @@
       background-color: #FFFFFF !important;
       border: none !important;
     }
+
+    .panel-header-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
   </ui:style>
 
   <uf:ResizeFocusPanel ui:field="container">
     <b:Panel>
       <b:PanelHeader ui:field="header" addStyleNames="{style.panel-header}">
-        <b:DropDown pull="RIGHT" ui:field="dropdown" visible="false">
+        <b:DropDown pull="RIGHT" ui:field="dropdown">
           <b:Anchor dataToggle="DROPDOWN" addStyleNames="dropdown-toggle caret {style.dropdown}" />
           <b:DropDownMenu addStyleNames="{style.dropdown-menu} dropdown-menu-right">
             <ufm:MaximizeToggleButton ui:field="maximizeButton" />
@@ -59,7 +66,7 @@
             <b:AnchorListItem ui:field="closeButton" icon="TIMES" iconSize="LARGE" />
           </b:DropDownMenu>
         </b:DropDown>
-        <b:Heading size="H3" ui:field="title"/>
+        <b:Heading size="H3" ui:field="title" addStyleNames="{style.panel-header-title}"/>
       </b:PanelHeader>
       <b:PanelBody ui:field="content" />
     </b:Panel>

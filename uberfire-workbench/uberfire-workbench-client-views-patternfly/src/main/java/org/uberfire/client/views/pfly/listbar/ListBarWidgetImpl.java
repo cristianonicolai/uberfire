@@ -238,10 +238,16 @@ public class ListBarWidgetImpl
 //        content.getElement().getStyle().setLeft( 0.0, Unit.PX );
 //        content.getElement().getStyle().setWidth( 100.0, Unit.PCT );
         // height is calculated and set in onResize()
-//        if(isDndEnabled){
+        if(isDndEnabled){
 //            dragHandle = new DragArea(drag);
-//            initWidget(dragHandle);
-//        }
+//           and  initWidget(dragHandle);
+            drag.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    GWT.log("on click!");
+                }
+            });
+        }
     }
 
     boolean isPropertyListbarContextDisable() {
@@ -321,9 +327,8 @@ public class ListBarWidgetImpl
         partTitle.put( partDefinition, title );
         title.ensureDebugId( DEBUG_TITLE_PREFIX + view.getPresenter().getTitle() );
 
-        GWT.log("addPart isDndEnabled: " + isDndEnabled);
         if ( isDndEnabled ) {
-           dndManager.makeDraggable( view, drag);
+            dndManager.makeDraggable( view, drag );
         }
 
         scheduleResize();
@@ -337,16 +342,6 @@ public class ListBarWidgetImpl
     }
 
     private Widget buildTitle( final String title ) {
-//        final SpanElement spanElement = Document.get().createSpanElement();
-//        spanElement.getStyle().setWhiteSpace( Style.WhiteSpace.NOWRAP );
-//        spanElement.getStyle().setOverflow( Style.Overflow.HIDDEN );
-//        spanElement.getStyle().setTextOverflow( Style.TextOverflow.ELLIPSIS );
-//        spanElement.getStyle().setDisplay( BLOCK );
-//        spanElement.setInnerText( title.replaceAll( " ", "\u00a0" ) );
-//
-//        return new DragArea() {{
-//            add( spanElement );
-//        }};
         return new Text(SafeHtmlUtils.htmlEscape(title));
     }
 
