@@ -41,6 +41,7 @@ import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
 import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
+import org.uberfire.client.workbench.widgets.dnd.DragArea;
 import org.uberfire.client.workbench.widgets.dnd.WorkbenchDragAndDropManager;
 import org.uberfire.client.workbench.widgets.listbar.ListBarWidget;
 import org.uberfire.client.workbench.widgets.listbar.ListbarPreferences;
@@ -140,6 +141,8 @@ public class ListBarWidgetImpl
     /** Wraps maximizeButton, which is the view. */
     MaximizeToggleButtonPresenter maximizeButtonPresenter;
 
+    DragArea dragHandle;
+
     @UiField
     PanelBody content;
 
@@ -235,6 +238,10 @@ public class ListBarWidgetImpl
 //        content.getElement().getStyle().setLeft( 0.0, Unit.PX );
 //        content.getElement().getStyle().setWidth( 100.0, Unit.PCT );
         // height is calculated and set in onResize()
+//        if(isDndEnabled){
+//            dragHandle = new DragArea(drag);
+//            initWidget(dragHandle);
+//        }
     }
 
     boolean isPropertyListbarContextDisable() {
@@ -316,7 +323,7 @@ public class ListBarWidgetImpl
 
         GWT.log("addPart isDndEnabled: " + isDndEnabled);
         if ( isDndEnabled ) {
-            dndManager.makeDraggable( view, drag );
+           dndManager.makeDraggable( view, drag);
         }
 
         scheduleResize();

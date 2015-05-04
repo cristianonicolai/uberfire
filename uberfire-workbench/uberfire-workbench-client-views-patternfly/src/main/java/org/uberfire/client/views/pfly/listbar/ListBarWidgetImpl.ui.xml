@@ -33,14 +33,24 @@
       margin-right: -10px;
     }
 
+    .dropdown-menu > li {
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+
     .dropdown {
       padding-right: 15px;
+    }
+
+    .panel-header {
+      background-color: #FFFFFF !important;
+      border: none !important;
     }
   </ui:style>
 
   <uf:ResizeFocusPanel ui:field="container">
     <b:Panel>
-      <b:PanelHeader ui:field="header">
+      <b:PanelHeader ui:field="header" addStyleNames="{style.panel-header}">
         <b:DropDown pull="RIGHT" ui:field="dropdown" visible="false">
           <b:Anchor dataToggle="DROPDOWN" addStyleNames="dropdown-toggle caret {style.dropdown}" />
           <b:DropDownMenu addStyleNames="{style.dropdown-menu} dropdown-menu-right">
