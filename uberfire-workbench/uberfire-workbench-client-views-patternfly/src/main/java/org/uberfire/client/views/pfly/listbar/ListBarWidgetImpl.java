@@ -17,6 +17,7 @@ package org.uberfire.client.views.pfly.listbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -28,6 +29,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
@@ -149,6 +151,9 @@ public class ListBarWidgetImpl
     @UiField
     DropDown dropdown;
 
+    @UiField
+    Anchor dropDownMenuButton;
+
 //    @UiField
 //    FlowPanel menuArea;
 
@@ -193,19 +198,29 @@ public class ListBarWidgetImpl
             @Override
             public void onMouseOut(MouseOutEvent event) {
                 dropdown.removeStyleName("open");
-                dropdown.setVisible(false);
+                muteDropDownMenuButton();
             }
         });
 
-        this.container.addMouseOverHandler(new MouseOverHandler() {
+        this.dropDownMenuButton.addDomHandler(new MouseOverHandler() {
             @Override
             public void onMouseOver(MouseOverEvent event) {
-                dropdown.setVisible(true);
+                dropDownMenuButton.setIconMuted(false);
             }
-        });
+        }, MouseOverEvent.getType());
+
+        this.dropDownMenuButton.addDomHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                if (dropdown.getElement().hasClassName("open") == false) {
+                    muteDropDownMenuButton();
+                }
+            }
+        }, MouseOutEvent.getType());
+
+        addDropdownEventHandler(dropdown.getElement());
+
 //        this.menuArea.setVisible( false );
-        GWT.log("isDndEnabled: " + isDndEnabled);
-        GWT.log("isMultiPart: " + isMultiPart);
         if ( isMultiPart ) {
             closeButton.addDomHandler(new ClickHandler() {
                 @Override
@@ -249,6 +264,17 @@ public class ListBarWidgetImpl
             });
         }
     }
+
+    public void muteDropDownMenuButton(){
+        dropDownMenuButton.setIconMuted(true);
+    }
+
+    public native void addDropdownEventHandler(Element element)/*-{
+        var widget = this;
+        $wnd.$(element).on('hide.bs.dropdown', function (event) {
+            widget.@org.uberfire.client.views.pfly.listbar.ListBarWidgetImpl::muteDropDownMenuButton()();
+        });
+    }-*/;
 
     boolean isPropertyListbarContextDisable() {
         if ( optionalListBarPrefs.isUnsatisfied() ) {

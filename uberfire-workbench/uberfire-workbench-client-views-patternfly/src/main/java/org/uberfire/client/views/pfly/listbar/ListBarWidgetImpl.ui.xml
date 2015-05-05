@@ -25,48 +25,18 @@
 
   <ui:with field="res" type="org.uberfire.client.resources.WorkbenchResources"/>
 
-  <ui:style>
-    .dropdown-menu {
-      min-width: 25px;
-      text-align: center;
-      margin-top: 5px;
-      margin-right: -10px;
-    }
-
-    .dropdown-menu > li {
-      padding-top: 3px;
-      padding-bottom: 3px;
-    }
-
-    .dropdown {
-      padding-right: 15px;
-    }
-
-    .panel-header {
-      background-color: #FFFFFF !important;
-      border: none !important;
-    }
-
-    .panel-header-title {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-    }
-  </ui:style>
-
   <uf:ResizeFocusPanel ui:field="container">
-    <b:Panel>
-      <b:PanelHeader ui:field="header" addStyleNames="{style.panel-header}">
+    <b:Panel addStyleNames="uf-listbar-panel">
+      <b:PanelHeader ui:field="header">
         <b:DropDown pull="RIGHT" ui:field="dropdown">
-          <b:Anchor dataToggle="DROPDOWN" addStyleNames="dropdown-toggle caret {style.dropdown}" />
-          <b:DropDownMenu addStyleNames="{style.dropdown-menu} dropdown-menu-right">
+          <b:Anchor icon="ELLIPSIS_H" iconSize="LARGE" iconMuted="true" ui:field="dropDownMenuButton" dataToggle="DROPDOWN" addStyleNames="btn btn-default btn-sm dropdown-toggle" />
+          <b:DropDownMenu addStyleNames="dropdown-menu-right">
             <ufm:MaximizeToggleButton ui:field="maximizeButton" />
             <b:AnchorListItem ui:field="drag" icon="ARROWS" iconSize="LARGE" />
             <b:AnchorListItem ui:field="closeButton" icon="TIMES" iconSize="LARGE" />
           </b:DropDownMenu>
         </b:DropDown>
-        <b:Heading size="H3" ui:field="title" addStyleNames="{style.panel-header-title}"/>
+        <b:Heading size="H3" ui:field="title"/>
       </b:PanelHeader>
       <b:PanelBody ui:field="content" />
     </b:Panel>
