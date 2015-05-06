@@ -20,18 +20,22 @@
   color: #999999;
 }
 
-.uf-listbar-panel .panel-heading {
+.uf-listbar-panel {
+
+}
+
+.uf-listbar-panel-header {
   background-color: #FFFFFF !important;
 }
 
-.uf-listbar-panel .panel-heading > h3 {
+.uf-listbar-panel-header > h3 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
 }
 
-.uf-listbar-panel .dropdown-menu {
+.uf-listbar-panel-header .dropdown-menu {
   min-width: 26px;
   max-width: 26px;
   text-align: center;
@@ -39,16 +43,16 @@
   margin-right: -5px;
 }
 
-.uf-listbar-panel .dropdown-menu > li {
+.uf-listbar-panel-header .dropdown-menu > li {
   padding-top: 3px;
   padding-bottom: 3px;
 }
 
-.uf-listbar-panel .dropdown-menu > li > a {
+.uf-listbar-panel-header .dropdown-menu > li > a {
   padding: 0px;
 }
 
-.uf-listbar-panel .dropdown > a {
+.uf-listbar-panel-header .dropdown > a {
   margin-right: -5px;
   margin-top: -9px;
 }

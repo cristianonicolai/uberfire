@@ -27,7 +27,7 @@
 
   <uf:ResizeFocusPanel ui:field="container">
     <b:Panel addStyleNames="uf-listbar-panel">
-      <b:PanelHeader ui:field="header">
+      <b:PanelHeader ui:field="header" addStyleNames="uf-listbar-panel-header">
         <b:DropDown pull="RIGHT" ui:field="dropdown">
           <b:Anchor icon="ELLIPSIS_H" iconSize="LARGE" iconMuted="true" ui:field="dropDownMenuButton" dataToggle="DROPDOWN" addStyleNames="btn btn-default btn-sm dropdown-toggle" />
           <b:DropDownMenu addStyleNames="dropdown-menu-right">
