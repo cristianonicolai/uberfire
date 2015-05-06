@@ -43,8 +43,8 @@ public class TodoListScreen extends AbstractMarkdownScreen {
     @WorkbenchMenu
     public Menus getMenu() {
         return MenuFactory
-                .newTopLevelMenu("Save")
-                .respondsWith(new Command() {
+                .newTopLevelMenu( "Save" )
+                .respondsWith( new Command() {
                     @Override
                     public void execute() {
                         Window.alert("Saved!");
