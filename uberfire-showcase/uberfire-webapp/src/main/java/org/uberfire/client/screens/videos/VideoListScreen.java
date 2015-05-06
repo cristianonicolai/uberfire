@@ -28,8 +28,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Heading;
-import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.PanelFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -67,12 +65,7 @@ public class VideoListScreen {
         for ( final YouTubeVideo video : VIDEOS ) {
 
             final Heading h3 = new Heading(HeadingSize.H3, video.getName());
-
-            final PanelBody panelBody = new PanelBody();
             final Paragraph p = new Paragraph(video.getDescription());
-            panelBody.add(p);
-
-            final PanelFooter panelFooter = new PanelFooter();
             final Button play = new Button("Play", new ClickHandler() {
                 @Override
                 public void onClick(final ClickEvent e) {
@@ -81,7 +74,6 @@ public class VideoListScreen {
             });
             play.setIcon(IconType.YOUTUBE_PLAY);
             play.setSize(ButtonSize.SMALL);
-            panelFooter.add(play);
 
             widgets.add(h3);
             widgets.add(p);
