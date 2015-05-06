@@ -16,6 +16,10 @@
 
 package org.uberfire.client.screens.todo;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,7 +27,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.PanelBody;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.uberfire.backend.vfs.Path;
@@ -34,10 +37,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.util.Layouts;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 @Dependent
 @WorkbenchScreen(identifier = "TodoListScreen", preferredWidth = 400)
@@ -57,12 +56,12 @@ implements RequiresResize {
     private Caller<VFSService> vfsServices;
 
     @UiField
-    protected PanelBody markdown;
+    protected HTML markdown;
 
     @PostConstruct
     public void init() {
-        initWidget( uiBinder.createAndBindUi( this ) );
-        Layouts.setToFillParent( markdown );
+        initWidget(uiBinder.createAndBindUi(this));
+        Layouts.setToFillParent(markdown);
 
         vfsServices.call( new RemoteCallback<Path>() {
             @Override
@@ -71,9 +70,9 @@ implements RequiresResize {
                     @Override
                     public void callback( final String response ) {
                         if ( response == null ) {
-                            markdown.add(new HTML("<p>-- empty --</p>"));
+                            markdown.setHTML("<p>-- empty --</p>");
                         } else {
-                            markdown.add(new HTML(response));
+                            markdown.setHTML(response);
                         }
                     }
                 } ).readAllString( o );

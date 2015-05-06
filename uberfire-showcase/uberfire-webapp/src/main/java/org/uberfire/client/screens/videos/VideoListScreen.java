@@ -16,23 +16,28 @@
 
 package org.uberfire.client.screens.videos;
 
+import java.util.LinkedList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelFooter;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.events.YouTubeVideo;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.LinkedList;
-import java.util.List;
 
 @Dependent
 @WorkbenchScreen(identifier = "YouTubeVideos")
@@ -61,26 +66,26 @@ public class VideoListScreen {
 
         for ( final YouTubeVideo video : VIDEOS ) {
 
-            final Panel panel = new Panel();
-            final PanelHeader panelHeader = new PanelHeader();
-            panelHeader.add(new Heading(HeadingSize.H3, video.getName()));
+            final Heading h3 = new Heading(HeadingSize.H3, video.getName());
 
             final PanelBody panelBody = new PanelBody();
-            panelBody.add(new Paragraph(video.getDescription()));
+            final Paragraph p = new Paragraph(video.getDescription());
+            panelBody.add(p);
 
             final PanelFooter panelFooter = new PanelFooter();
-            panelFooter.add(new Button("Play", new ClickHandler() {
+            final Button play = new Button("Play", new ClickHandler() {
                 @Override
                 public void onClick(final ClickEvent e) {
                     event.fire(video);
                 }
-            }));
+            });
+            play.setIcon(IconType.YOUTUBE_PLAY);
+            play.setSize(ButtonSize.SMALL);
+            panelFooter.add(play);
 
-            panel.add(panelHeader);
-            panel.add(panelBody);
-            panel.add(panelFooter);
-
-            widgets.add( panel );
+            widgets.add(h3);
+            widgets.add(p);
+            widgets.add(play);
         }
 
         return widgets;
