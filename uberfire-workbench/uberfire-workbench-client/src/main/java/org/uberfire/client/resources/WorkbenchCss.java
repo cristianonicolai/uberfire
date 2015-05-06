@@ -43,4 +43,13 @@ public interface WorkbenchCss
 
     @ClassName("show-context")
     String showContext();
+
+    @ClassName("uf-split-layout-panel")
+    String splitLayoutPanel();
+
+    @ClassName("uf-split-layout-panel-hdragger")
+    String splitLayoutPanelHDragger();
+
+    @ClassName("uf-split-layout-panel-vdragger")
+    String splitLayoutPanelVDragger();
 }

@@ -99,3 +99,17 @@
 .uf-maximized-panel {
 	background-color: #fff;
 }
+
+.uf-split-layout-panel {
+
+}
+
+.uf-split-layout-panel-hdragger {
+    cursor: col-resize;
+    background-color: #ddd;
+}
+
+.uf-split-layout-panel-vdragger {
+    cursor: row-resize;
+    background-color: #ddd;
+}

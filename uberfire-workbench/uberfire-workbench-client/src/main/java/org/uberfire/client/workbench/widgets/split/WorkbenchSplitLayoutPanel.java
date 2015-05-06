@@ -15,6 +15,7 @@
  */
 package org.uberfire.client.workbench.widgets.split;
 
+import org.uberfire.client.resources.WorkbenchResources;
 import org.uberfire.workbench.model.CompassPosition;
 
 import com.google.gwt.core.client.Scheduler;
@@ -68,9 +69,7 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
                          boolean reverse) {
             super( target,
                    reverse );
-            getElement().getStyle().setPropertyPx( "width",
-                                                   splitterSize );
-            setStyleName( "gwt-SplitLayoutPanel-HDragger" );
+            setStyleName(WorkbenchResources.INSTANCE.CSS().splitLayoutPanelHDragger());
         }
 
         @Override
@@ -250,9 +249,7 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
                          boolean reverse) {
             super( target,
                    reverse );
-            getElement().getStyle().setPropertyPx( "height",
-                                                   splitterSize );
-            setStyleName( "gwt-SplitLayoutPanel-VDragger" );
+            setStyleName(WorkbenchResources.INSTANCE.CSS().splitLayoutPanelVDragger());
         }
 
         @Override
@@ -281,7 +278,7 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
         }
     }
 
-    private static final int DEFAULT_SPLITTER_SIZE = 8;
+    private static final int DEFAULT_SPLITTER_SIZE = 1;
 
     /**
      * The element that masks the screen so we can catch mouse events over
@@ -311,7 +308,7 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
     public WorkbenchSplitLayoutPanel(int splitterSize) {
         super( Unit.PX );
         this.splitterSize = splitterSize;
-        setStyleName( "gwt-SplitLayoutPanel" );
+        setStyleName(WorkbenchResources.INSTANCE.CSS().splitLayoutPanel());
 
         if ( glassElem == null ) {
             glassElem = Document.get().createDivElement();
