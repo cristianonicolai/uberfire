@@ -21,74 +21,66 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.util.Layouts;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 
 @Dependent
-@WorkbenchScreen(identifier = "TodoListScreen", preferredWidth = 400)
-public class TodoListScreen
-extends Composite
-implements RequiresResize {
+@WorkbenchScreen(identifier = "TodoListScreen", preferredWidth = 450)
+public class TodoListScreen {
 
     private static final String EMPTY = "<p>-- empty --</p>";
-
-    interface ViewBinder
-    extends
-    UiBinder<Widget, TodoListScreen> {
-
-    }
-
-    private static ViewBinder uiBinder = GWT.create( ViewBinder.class );
 
     @Inject
     private Caller<VFSService> vfsServices;
 
-    @UiField
-    protected HTML markdown;
+    private HTML markdown = new HTML(EMPTY);
 
     @PostConstruct
     public void init() {
-        initWidget(uiBinder.createAndBindUi(this));
-        Layouts.setToFillParent(markdown);
-
-        vfsServices.call( new RemoteCallback<Path>() {
+        vfsServices.call(new RemoteCallback<Path>() {
             @Override
-            public void callback( final Path o ) {
-                vfsServices.call( new RemoteCallback<String>() {
+            public void callback(final Path o) {
+                vfsServices.call(new RemoteCallback<String>() {
                     @Override
-                    public void callback( final String response ) {
-                        if ( response == null ) {
-                            markdown.setHTML(EMPTY);
+                    public void callback(final String response) {
+
+                        if (response == null) {
+                            setContent(EMPTY);
                         } else {
                             try {
-                                markdown.setHTML( parseMarkdown( response ) );
-                            } catch ( Exception e ) {
-                                markdown.setText( EMPTY );
-                                GWT.log( "Error parsing markdown content", e );
+                                setContent(parseMarkdown(response));
+                            } catch (Exception e) {
+                                setContent(EMPTY);
+                                GWT.log("Error parsing markdown content", e);
                             }
                         }
                     }
-                } ).readAllString( o );
+                }).readAllString(o);
             }
-        } ).get( "default://uf-playground/todo.md" );
+        }).get("default://uf-playground/todo.md");
     }
 
-    public static native String parseMarkdown( String content )/*-{
-      return $wnd.marked(content);
+    @WorkbenchPartView
+    public IsWidget getView() {
+        return markdown;
+    }
+
+    private void setContent(final String content) {
+        this.markdown.setHTML(content);
+    }
+
+    public static native String parseMarkdown(String content)/*-{
+        return $wnd.marked(content);
     }-*/;
 
     @DefaultPosition
@@ -96,17 +88,9 @@ implements RequiresResize {
         return CompassPosition.EAST;
     }
 
-    @Override
     @WorkbenchPartTitle
     public String getTitle() {
         return "Todo List";
-    }
-
-    @Override
-    public void onResize() {
-        int height = getParent().getOffsetHeight();
-        int width = getParent().getOffsetWidth();
-        setPixelSize( width, height );
     }
 
 }
