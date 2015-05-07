@@ -25,6 +25,7 @@ $registerPerspective({
             },
             {
                 position: "east",
+                width: 450,
                 panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
                 parts: [
                     {
