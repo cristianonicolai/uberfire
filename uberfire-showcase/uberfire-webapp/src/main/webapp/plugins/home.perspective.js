@@ -1,12 +1,13 @@
 $registerPerspective({
     id: "Home",
     is_default: true,
-    panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
+    panel_type: "org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter",
     view: {
         parts: [
             {
                 place: "welcome",
                 min_height: 100,
+                height: 200,
                 parameters: {}
             }
         ],
@@ -37,7 +38,7 @@ $registerPerspective({
             {
                 height: 400,
                 position: "south",
-                panel_type: "org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter",
+                panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
                 parts: [
                     {
                         place: "YouTubeScreen",
