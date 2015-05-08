@@ -5,6 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
 import org.gwtbootstrap3.client.shared.event.TabShownEvent;
@@ -12,6 +18,7 @@ import org.gwtbootstrap3.client.shared.event.TabShownHandler;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.Navbar;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPanel;
@@ -25,22 +32,34 @@ import com.google.common.collect.Multimap;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.client.workbench.widgets.listbar.ResizeFocusPanel;
 
 /**
  * A Bootstrap3 TabPanel which supports a mix of normal tabs and tabs that are dropdown menus. Selecting an item from a
  * dropdown menu tab causes that item's associated content to display in the tab panel's content area.
  */
+@Dependent
 public class TabPanelWithDropdowns extends Composite {
 
+    interface TabPanelWithDropdownsBinder
+            extends
+            UiBinder<TabPanel, TabPanelWithDropdowns> {
+
+    }
+
+    private static TabPanelWithDropdownsBinder uiBinder = GWT.create(TabPanelWithDropdownsBinder.class);
     /**
      * The bar at the top where the tabs sit.
      */
-    protected final NavTabs tabBar;
+    @UiField
+    protected NavTabs tabBar;
 
     /**
      * The content area that shows the content for the currently selected tab.
      */
-    protected final TabContent tabContent;
+    @UiField
+    protected TabContent tabContent;
 
     /**
      * Widgets we have created that can have the CSS style name "active" added to them. When a new tab is selected, all
@@ -107,14 +126,9 @@ public class TabPanelWithDropdowns extends Composite {
     /**
      * Creates an empty tab panel.
      */
-    public TabPanelWithDropdowns() {
-        tabBar = new NavTabs();
-        tabContent = new TabContent();
-
-        TabPanel root = new TabPanel();
-        root.add( tabBar );
-        root.add( tabContent );
-        initWidget( root );
+    @PostConstruct
+    public void init() {
+        initWidget( uiBinder.createAndBindUi( this ) );
     }
 
     /**

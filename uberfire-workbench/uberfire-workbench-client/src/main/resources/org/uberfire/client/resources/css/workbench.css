@@ -45,9 +45,8 @@
     padding-right: 2px;
 }
 
-.activeNavTabs {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: 0 0 8px rgba(82, 168, 236, 0.6);
+.uf-activeNavTabs {
+
 }
 
 .tabCloseButton {

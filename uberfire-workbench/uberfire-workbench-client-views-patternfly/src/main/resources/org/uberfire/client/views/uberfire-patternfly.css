@@ -56,3 +56,15 @@
   margin-right: -5px;
   margin-top: -9px;
 }
+
+.uf-tabbar-panel {
+
+}
+
+.uf-tabbar-panel-nav-tabs {
+  padding-top: 1px;
+}
+
+.uf-tabbar-panel-nav-tabs .uf-activeNavTabs {
+
+}
