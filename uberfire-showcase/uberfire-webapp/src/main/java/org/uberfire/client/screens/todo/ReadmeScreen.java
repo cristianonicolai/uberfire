@@ -40,8 +40,8 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "TodoListScreen", preferredWidth = 400)
-public class TodoListScreen {
+@WorkbenchScreen(identifier = "ReadmeScreen", preferredWidth = 400)
+public class ReadmeScreen {
 
     private static final String EMPTY = "<p>-- empty --</p>";
 
@@ -52,14 +52,13 @@ public class TodoListScreen {
 
     @PostConstruct
     public void init() {
-        vfsServices.call(new RemoteCallback<Path>() {
+        vfsServices.call( new RemoteCallback<Path>() {
             @Override
-            public void callback(final Path o) {
-                vfsServices.call(new RemoteCallback<String>() {
+            public void callback( final Path o ) {
+                vfsServices.call( new RemoteCallback<String>() {
                     @Override
-                    public void callback(final String response) {
-
-                        if (response == null) {
+                    public void callback( final String response ) {
+                        if ( response == null ) {
                             setContent(EMPTY);
                         } else {
                             try {
@@ -70,14 +69,38 @@ public class TodoListScreen {
                             }
                         }
                     }
-                }).readAllString(o);
+                } ).readAllString( o );
             }
-        }).get("default://uf-playground/todo.md");
+        } ).get( "default://uf-playground/README.md" );
     }
 
     @WorkbenchPartView
     public IsWidget getView() {
         return markdown;
+    }
+
+    @DefaultPosition
+    public Position getDefaultPosition() {
+        return CompassPosition.EAST;
+    }
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return "README";
+    }
+
+    @WorkbenchMenu
+    public Menus getMenu() {
+        return MenuFactory
+                .newTopLevelMenu( "Validate" )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        Window.alert( "valid!" );
+                    }
+                } )
+                .endMenu()
+                .build();
     }
 
     private void setContent(final String content) {
@@ -87,37 +110,5 @@ public class TodoListScreen {
     public static native String parseMarkdown(String content)/*-{
         return $wnd.marked(content);
     }-*/;
-
-    @DefaultPosition
-    public Position getDefaultPosition() {
-        return CompassPosition.EAST;
-    }
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return "Todo List";
-    }
-
-    @WorkbenchMenu
-    public Menus getMenu() {
-        return MenuFactory
-                .newTopLevelMenu("Save")
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        Window.alert( "Saved!" );
-                    }
-                } )
-                .endMenu()
-                .newTopLevelMenu( "Delete" )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        Window.alert( "Deleted!" );
-                    }
-                } )
-                .endMenu()
-                .build();
-    }
 
 }

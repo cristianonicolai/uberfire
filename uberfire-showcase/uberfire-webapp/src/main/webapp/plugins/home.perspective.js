@@ -1,15 +1,9 @@
 $registerPerspective({
     id: "Home",
     is_default: true,
-    panel_type: "org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter",
-    min_height: 100,
-    height: 200,
+    panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
     view: {
         parts: [
-            {
-                place: "WelcomeTabScreen",
-                parameters: {}
-            },
             {
                 place: "welcome",
                 parameters: {}
@@ -20,7 +14,7 @@ $registerPerspective({
                 width: 250,
                 min_width: 200,
                 position: "west",
-                panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
+                panel_type: "org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter",
                 parts: [
                     {
                         place: "YouTubeVideos",
@@ -35,6 +29,10 @@ $registerPerspective({
                 parts: [
                     {
                         place: "TodoListScreen",
+                        parameters: {}
+                    },
+                    {
+                        place: "ReadmeScreen",
                         parameters: {}
                     }
                 ]
