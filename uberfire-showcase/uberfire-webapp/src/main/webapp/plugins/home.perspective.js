@@ -5,10 +5,6 @@ $registerPerspective({
     view: {
         parts: [
             {
-                place: "WelcomeTabScreen",
-                parameters: {}
-            },
-            {
                 place: "welcome",
                 parameters: {}
             }
