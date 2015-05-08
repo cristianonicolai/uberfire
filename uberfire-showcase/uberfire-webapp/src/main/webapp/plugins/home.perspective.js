@@ -18,7 +18,7 @@ $registerPerspective({
                 width: 250,
                 min_width: 200,
                 position: "west",
-                panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
+                panel_type: "org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter",
                 parts: [
                     {
                         place: "YouTubeVideos",
@@ -37,6 +37,10 @@ $registerPerspective({
                     },
                     {
                         place: "TodoListScreen",
+                        parameters: {}
+                    },
+                    {
+                        place: "ReadmeScreen",
                         parameters: {}
                     }
                 ]
