@@ -34,6 +34,7 @@ public interface WorkbenchCss
 
     String statusBar();
 
+    @ClassName("uf-activeNavTabs")
     String activeNavTabs();
 
     String tabCloseButton();
