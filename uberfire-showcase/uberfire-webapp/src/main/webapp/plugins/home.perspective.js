@@ -2,12 +2,16 @@ $registerPerspective({
     id: "Home",
     is_default: true,
     panel_type: "org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter",
+    min_height: 100,
+    height: 200,
     view: {
         parts: [
             {
+                place: "WelcomeTabScreen",
+                parameters: {}
+            },
+            {
                 place: "welcome",
-                min_height: 100,
-                height: 200,
                 parameters: {}
             }
         ],
