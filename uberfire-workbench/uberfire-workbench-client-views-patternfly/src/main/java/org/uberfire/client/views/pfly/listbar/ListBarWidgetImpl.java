@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -223,14 +224,16 @@ public class ListBarWidgetImpl
             @Override
             public void onMouseOut(MouseOutEvent event) {
                 toolBarDropDown.removeStyleName("open");
-                muteToolBarDropDownMenuButton();
+                muteToolBarDropDownMenuButton(null);
             }
         });
 
         this.toolBarDropDownMenuButton.addDomHandler(new MouseOverHandler() {
             @Override
             public void onMouseOver(MouseOverEvent event) {
-                toolBarDropDownMenuButton.setIconMuted(false);
+                if (toolBarDropDownMenuButton.isIconMuted()) {
+                    toolBarDropDownMenuButton.setIconMuted(false);
+                }
             }
         }, MouseOverEvent.getType());
 
@@ -238,7 +241,7 @@ public class ListBarWidgetImpl
             @Override
             public void onMouseOut(MouseOutEvent event) {
                 if (toolBarDropDown.getElement().hasClassName("open") == false) {
-                    muteToolBarDropDownMenuButton();
+                    muteToolBarDropDownMenuButton(null);
                 }
             }
         }, MouseOutEvent.getType());
@@ -290,14 +293,19 @@ public class ListBarWidgetImpl
         }
     }
 
-    public void muteToolBarDropDownMenuButton(){
-        toolBarDropDownMenuButton.setIconMuted(true);
+    public void muteToolBarDropDownMenuButton(final NativeEvent event){
+        if(event != null && Element.as(event.getEventTarget()).hasClassName("uf-listbar-panel-header-toolbar")){
+            return;
+        }
+        if(toolBarDropDownMenuButton.isIconMuted() == false) {
+            toolBarDropDownMenuButton.setIconMuted(true);
+        }
     }
 
     public native void addDropdownEventHandler(final Element element)/*-{
         var widget = this;
         $wnd.$(element).on('hide.bs.dropdown', function (event) {
-            widget.@org.uberfire.client.views.pfly.listbar.ListBarWidgetImpl::muteToolBarDropDownMenuButton()();
+            widget.@org.uberfire.client.views.pfly.listbar.ListBarWidgetImpl::muteToolBarDropDownMenuButton(Lcom/google/gwt/dom/client/NativeEvent;)(event);
         });
     }-*/;
 
