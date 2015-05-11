@@ -26,6 +26,7 @@
 
 .uf-listbar-panel-header {
   background-color: #FFFFFF !important;
+  min-height: 36px;
 }
 
 .uf-listbar-panel-header > h3 {
@@ -35,26 +36,29 @@
   display: block;
 }
 
-.uf-listbar-panel-header .dropdown-menu {
+.uf-listbar-panel-header .btn-toolbar {
+  margin-top: -4px;
+}
+
+.uf-listbar-panel-header-toolbar > .btn {
+  vertical-align: baseline !important;
+}
+
+.uf-listbar-panel-header-toolbar .dropdown-menu {
   min-width: 26px;
   max-width: 26px;
   text-align: center;
-  margin-top: 5px;
+  margin-top: 7px;
   margin-right: -5px;
 }
 
-.uf-listbar-panel-header .dropdown-menu > li {
+.uf-listbar-panel-header-toolbar .dropdown-menu > li {
   padding-top: 3px;
   padding-bottom: 3px;
 }
 
-.uf-listbar-panel-header .dropdown-menu > li > a {
+.uf-listbar-panel-header-toolbar .dropdown-menu > li > a {
   padding: 0px;
-}
-
-.uf-listbar-panel-header .dropdown > a {
-  margin-right: -5px;
-  margin-top: -9px;
 }
 
 .uf-tabbar-panel {

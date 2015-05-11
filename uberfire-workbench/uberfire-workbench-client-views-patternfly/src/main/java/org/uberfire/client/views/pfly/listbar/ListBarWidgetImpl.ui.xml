@@ -28,43 +28,27 @@
   <uf:ResizeFocusPanel ui:field="container">
     <b:Panel addStyleNames="uf-listbar-panel">
       <b:PanelHeader ui:field="header" addStyleNames="uf-listbar-panel-header">
-        <b:DropDown pull="RIGHT" ui:field="dropdown">
-          <b:Anchor icon="ELLIPSIS_H" iconSize="LARGE" iconMuted="true" ui:field="dropDownMenuButton" dataToggle="DROPDOWN" addStyleNames="btn btn-default btn-sm dropdown-toggle" />
-          <b:DropDownMenu addStyleNames="dropdown-menu-right">
-            <ufm:MaximizeToggleButton ui:field="maximizeButton" />
-            <b:AnchorListItem ui:field="drag" icon="ARROWS" iconSize="LARGE" />
-            <b:AnchorListItem ui:field="closeButton" icon="TIMES" iconSize="LARGE" />
-          </b:DropDownMenu>
+        <b:ButtonToolBar addStyleNames="pull-right">
+          <b:ButtonGroup ui:field="contextMenu" />
+          <b:ButtonGroup>
+            <b:DropDown ui:field="toolBarDropDown" addStyleNames="uf-listbar-panel-header-toolbar">
+              <b:Anchor ui:field="toolBarDropDownMenuButton" icon="ELLIPSIS_H" iconSize="LARGE" iconMuted="true" dataToggle="DROPDOWN" addStyleNames="btn btn-default btn-sm" />
+              <b:DropDownMenu>
+                <ufm:MaximizeToggleButton ui:field="maximizeButton" />
+                <b:AnchorListItem ui:field="drag" icon="ARROWS" iconSize="LARGE" />
+                <b:AnchorListItem ui:field="closeButton" icon="TIMES" iconSize="LARGE" />
+              </b:DropDownMenu>
+            </b:DropDown>
+          </b:ButtonGroup>
+        </b:ButtonToolBar>
+        <b:DropDown ui:field="titleDropDown" visible="false" pull="LEFT">
+          <b:Anchor ui:field="titleAnchor" dataToggle="DROPDOWN"/>
+          <b:DropDownMenu ui:field="titleDropdownMenu" />
         </b:DropDown>
-        <b:Heading size="H3" ui:field="title"/>
+        <b:Heading size="H3" visible="false" ui:field="titleHeading" pull="LEFT" />
       </b:PanelHeader>
       <b:PanelBody ui:field="content" />
     </b:Panel>
-    <!--<g:FlowPanel styleName="{style.fill-parent}">-->
-      <!--<g:FlowPanel styleName="{res.CSS.listbar}" ui:field="header">-->
-
-        <!--<g:FlowPanel styleName="{style.pull-right} {style.better_margin}" ui:field="menuArea">-->
-          <!--<g:FlowPanel styleName="{style.inline} {style.better_margin}" ui:field="contextMenu"/>-->
-          <!--<tb:ButtonGroup styleName="{style.inline} {style.relative-position}" ui:field="dropdownCaretContainer">-->
-            <!--<tb:Anchor styleName="{style.title-bar-button}" ui:field="dropdownCaret" icon="ANGLE_DOWN" dataToggle="DROPDOWN"/>-->
-            <!--<tb:DropDownMenu ui:field="dropdownMenuItems" />-->
-          <!--</tb:ButtonGroup>-->
-          <!--<tb:ButtonGroup styleName="{style.inline}" ui:field="closeButtonContainer">-->
-            <!--<tb:Anchor styleName="{style.title-bar-button}" ui:field="closeButton" icon="TIMES"/>-->
-          <!--</tb:ButtonGroup>-->
-          <!--<tb:ButtonGroup>-->
-            <!--<ufm:MaximizeToggleButton ui:field="maximizeButton"/>-->
-          <!--</tb:ButtonGroup>-->
-        <!--</g:FlowPanel>-->
-
-        <!--<g:FlowPanel styleName="{style.inline}">-->
-          <!--<tb:Button ui:field="contextDisplay" size="EXTRA_SMALL" icon="REORDER"/>-->
-          <!--<g:SimplePanel styleName="{style.inline} {style.title}" ui:field="title"/>-->
-        <!--</g:FlowPanel>-->
-
-      <!--</g:FlowPanel>-->
-      <!--<g:FlowPanel ui:field="content"/>-->
-    <!--</g:FlowPanel>-->
   </uf:ResizeFocusPanel>
 
 </ui:UiBinder> 
