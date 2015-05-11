@@ -5,6 +5,10 @@ $registerPerspective({
     view: {
         parts: [
             {
+                place: "WelcomeTabScreen",
+                parameters: {}
+            },
+            {
                 place: "welcome",
                 parameters: {}
             }
@@ -14,7 +18,7 @@ $registerPerspective({
                 width: 250,
                 min_width: 200,
                 position: "west",
-                panel_type: "org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter",
+                panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
                 parts: [
                     {
                         place: "YouTubeVideos",
@@ -33,10 +37,6 @@ $registerPerspective({
                     },
                     {
                         place: "TodoListScreen",
-                        parameters: {}
-                    },
-                    {
-                        place: "ReadmeScreen",
                         parameters: {}
                     }
                 ]
