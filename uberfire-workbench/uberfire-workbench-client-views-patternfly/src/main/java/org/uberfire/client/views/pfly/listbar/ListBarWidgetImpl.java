@@ -88,7 +88,6 @@ import org.uberfire.workbench.model.menu.MenuCustom;
 import org.uberfire.workbench.model.menu.MenuGroup;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuItemCommand;
-import org.uberfire.workbench.model.menu.Menus;
 
 import static com.google.gwt.dom.client.Style.Display.*;
 
@@ -360,9 +359,6 @@ public class ListBarWidgetImpl
     @Override
     public void addPart( final WorkbenchPartPresenter.View view ) {
         final PartDefinition partDefinition = view.getPresenter().getDefinition();
-        final Menus menus = view.getPresenter().getMenus();
-//
-        GWT.log("menus: " + menus);
 
         if ( parts.contains( partDefinition ) ) {
             selectPart( partDefinition );
