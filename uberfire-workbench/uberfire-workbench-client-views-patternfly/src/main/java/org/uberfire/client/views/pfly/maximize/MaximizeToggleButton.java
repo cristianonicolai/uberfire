@@ -10,7 +10,7 @@ import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
 import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter.View;
 import org.uberfire.mvp.Command;
 
-import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 public class MaximizeToggleButton extends AnchorListItem implements View {
 
@@ -21,12 +21,12 @@ public class MaximizeToggleButton extends AnchorListItem implements View {
 
     public MaximizeToggleButton() {
         setMaximized(maximized);
-        addDomHandler(new ClickHandler() {
+        addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 presenter.handleClick();
             }
-        }, ClickEvent.getType());
+        });
         setIconSize(IconSize.LARGE);
     }
 

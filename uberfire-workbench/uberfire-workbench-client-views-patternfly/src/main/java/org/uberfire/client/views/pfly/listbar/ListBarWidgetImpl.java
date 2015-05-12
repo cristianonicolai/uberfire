@@ -213,23 +213,28 @@ public class ListBarWidgetImpl
     void postConstruct() {
         initWidget( uiBinder.createAndBindUi( this ) );
         maximizeButtonPresenter = new MaximizeToggleButtonPresenter( maximizeButton );
+        setupEventHandlers();
         setup( true, true );
 
         Layouts.setToFillParent( this );
         scheduleResize();
     }
 
-    @Override
-    public void setup( boolean isMultiPart,
-                       boolean isDndEnabled ) {
-        this.isMultiPart = isMultiPart;
-        this.isDndEnabled = isDndEnabled;
-
+    void setupEventHandlers(){
         this.container.addMouseOutHandler(new MouseOutHandler() {
             @Override
             public void onMouseOut(MouseOutEvent event) {
                 toolBarDropDown.removeStyleName("open");
                 muteToolBarDropDownMenuButton(null);
+            }
+        });
+
+        this.container.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                if (currentPart != null && currentPart.getK1() != null) {
+                    selectPart(currentPart.getK1());
+                }
             }
         });
 
@@ -253,6 +258,33 @@ public class ListBarWidgetImpl
 
         addDropdownEventHandler(toolBarDropDown.getElement());
 
+        maximizeButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(maximizeButton.isMaximized()){
+                    toolBar.clear();
+                    maximizeButton.addStyleName(Styles.BTN);
+                    maximizeButton.addStyleName("btn-default");
+                    maximizeButton.addStyleName("btn-sm");
+                    toolBar.add(maximizeButton);
+                } else {
+                    toolBar.clear();
+                    toolBar.add(toolBarDropDown);
+                    maximizeButton.removeStyleName(Styles.BTN);
+                    maximizeButton.removeStyleName("btn-default");
+                    maximizeButton.removeStyleName("btn-sm");
+                    toolBarDropDownMenu.insert(maximizeButton, 0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setup( boolean isMultiPart,
+                       boolean isDndEnabled ) {
+        this.isMultiPart = isMultiPart;
+        this.isDndEnabled = isDndEnabled;
+
 //        this.menuArea.setVisible( false );
         if ( isMultiPart ) {
             closeButton.addDomHandler(new ClickHandler() {
@@ -267,35 +299,6 @@ public class ListBarWidgetImpl
 //            dropdownCaretContainer.setVisible( false );
 //            closeButtonContainer.setVisible( false );
         }
-
-        container.addFocusHandler( new FocusHandler() {
-            @Override
-            public void onFocus( FocusEvent event ) {
-                if ( currentPart != null && currentPart.getK1() != null ) {
-                    selectPart( currentPart.getK1() );
-                }
-            }
-        } );
-
-        maximizeButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if(maximizeButton.isMaximized()){
-                    toolBar.clear();
-                    toolBar.add(toolBarDropDown);
-                    maximizeButton.removeStyleName(Styles.BTN);
-                    maximizeButton.removeStyleName("btn-default");
-                    maximizeButton.removeStyleName("btn-sm");
-                    toolBarDropDownMenu.insert(maximizeButton, 0);
-                } else {
-                    toolBar.clear();
-                    maximizeButton.addStyleName(Styles.BTN);
-                    maximizeButton.addStyleName("btn-default");
-                    maximizeButton.addStyleName("btn-sm");
-                    toolBar.add(maximizeButton);
-                }
-            }
-        });
 
 //        if ( isPropertyListbarContextDisable() ) {
 //            contextDisplay.removeFromParent();
