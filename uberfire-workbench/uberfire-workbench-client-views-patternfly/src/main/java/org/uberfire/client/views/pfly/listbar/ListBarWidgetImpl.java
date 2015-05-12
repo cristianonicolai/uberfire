@@ -158,6 +158,12 @@ public class ListBarWidgetImpl
 
     @UiField
     AnchorListItem drag;
+
+    @UiField
+    ButtonGroup toolBar;
+
+    @UiField
+    DropDownMenu toolBarDropDownMenu;
 //
 //    @UiField
 //    Anchor dropdownCaret;
@@ -206,7 +212,6 @@ public class ListBarWidgetImpl
     @PostConstruct
     void postConstruct() {
         initWidget( uiBinder.createAndBindUi( this ) );
-//        maximizeButton.setVisible( false );
         maximizeButtonPresenter = new MaximizeToggleButtonPresenter( maximizeButton );
         setup( true, true );
 
@@ -272,6 +277,26 @@ public class ListBarWidgetImpl
             }
         } );
 
+        maximizeButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(maximizeButton.isMaximized()){
+                    toolBar.clear();
+                    toolBar.add(toolBarDropDown);
+                    maximizeButton.removeStyleName(Styles.BTN);
+                    maximizeButton.removeStyleName("btn-default");
+                    maximizeButton.removeStyleName("btn-sm");
+                    toolBarDropDownMenu.insert(maximizeButton, 0);
+                } else {
+                    toolBar.clear();
+                    maximizeButton.addStyleName(Styles.BTN);
+                    maximizeButton.addStyleName("btn-default");
+                    maximizeButton.addStyleName("btn-sm");
+                    toolBar.add(maximizeButton);
+                }
+            }
+        });
+
 //        if ( isPropertyListbarContextDisable() ) {
 //            contextDisplay.removeFromParent();
 //        }
@@ -294,7 +319,7 @@ public class ListBarWidgetImpl
     }
 
     public void muteToolBarDropDownMenuButton(final NativeEvent event){
-        if(event != null && Element.as(event.getEventTarget()).hasClassName("uf-listbar-panel-header-toolbar")){
+        if(event != null && Element.as(event.getEventTarget()).getParentElement().hasClassName("uf-listbar-panel-header-toolbar")){
             return;
         }
         if(toolBarDropDownMenuButton.isIconMuted() == false) {
@@ -701,7 +726,7 @@ public class ListBarWidgetImpl
     }
 
     /**
-     * Returns the toggle button, which is initially hidden, that can be used to trigger maximizing and unmaximizing
+     * Returns the toggle button, that can be used to trigger maximizing and unmaximizing
      * of the panel containing this list bar. Make the button visible by calling {@link Widget#setVisible(boolean)}
      * and set its maximize and unmaximize actions with {@link MaximizeToggleButton#setMaximizeCommand(Command)} and
      * {@link MaximizeToggleButton#setUnmaximizeCommand(Command)}.

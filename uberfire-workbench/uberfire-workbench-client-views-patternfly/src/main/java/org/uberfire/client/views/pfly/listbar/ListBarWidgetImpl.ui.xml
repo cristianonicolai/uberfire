@@ -30,10 +30,10 @@
       <b:PanelHeader ui:field="header" addStyleNames="uf-listbar-panel-header">
         <b:ButtonToolBar addStyleNames="pull-right">
           <b:ButtonGroup ui:field="contextMenu" />
-          <b:ButtonGroup>
-            <b:DropDown ui:field="toolBarDropDown" addStyleNames="uf-listbar-panel-header-toolbar">
+          <b:ButtonGroup ui:field="toolBar" addStyleNames="uf-listbar-panel-header-toolbar">
+            <b:DropDown ui:field="toolBarDropDown">
               <b:Anchor ui:field="toolBarDropDownMenuButton" icon="ELLIPSIS_H" iconSize="LARGE" iconMuted="true" dataToggle="DROPDOWN" addStyleNames="btn btn-default btn-sm" />
-              <b:DropDownMenu>
+              <b:DropDownMenu ui:field="toolBarDropDownMenu">
                 <ufm:MaximizeToggleButton ui:field="maximizeButton" />
                 <b:AnchorListItem ui:field="drag" icon="ARROWS" iconSize="LARGE" />
                 <b:AnchorListItem ui:field="closeButton" icon="TIMES" iconSize="LARGE" />
