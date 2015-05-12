@@ -258,14 +258,15 @@ public class ListBarWidgetImpl
 
         addDropdownEventHandler(toolBarDropDown.getElement());
 
-        maximizeButton.addClickHandler(new ClickHandler() {
+        this.maximizeButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if(maximizeButton.isMaximized()){
+                if (maximizeButton.isMaximized()) {
                     toolBar.clear();
                     maximizeButton.addStyleName(Styles.BTN);
                     maximizeButton.addStyleName("btn-default");
                     maximizeButton.addStyleName("btn-sm");
+                    maximizeButton.setIconMuted(true);
                     toolBar.add(maximizeButton);
                 } else {
                     toolBar.clear();
@@ -277,6 +278,24 @@ public class ListBarWidgetImpl
                 }
             }
         });
+
+        this.maximizeButton.addDomHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                if (maximizeButton.isMaximized() && maximizeButton.isIconMuted()) {
+                    maximizeButton.setIconMuted(false);
+                }
+            }
+        }, MouseOverEvent.getType());
+
+        this.maximizeButton.addDomHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                if (maximizeButton.isMaximized() && maximizeButton.isIconMuted() == false) {
+                    maximizeButton.setIconMuted(true);
+                }
+            }
+        }, MouseOutEvent.getType());
     }
 
     @Override
