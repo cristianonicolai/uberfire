@@ -42,10 +42,10 @@
           </b:ButtonGroup>
         </b:ButtonToolBar>
         <b:DropDown ui:field="titleDropDown" visible="false" pull="LEFT">
-          <b:Anchor ui:field="titleAnchor" dataToggle="DROPDOWN"/>
+          <b:Anchor ui:field="titleAnchor" dataToggle="DROPDOWN" addStyleNames="uf-listbar-panel-header-title h3"/>
           <b:DropDownMenu ui:field="titleDropdownMenu" />
         </b:DropDown>
-        <b:Heading size="H3" visible="false" ui:field="titleHeading" pull="LEFT" />
+        <b:Heading size="H3" visible="false" ui:field="titleHeading" pull="LEFT" addStyleNames="uf-listbar-panel-header-title" />
       </b:PanelHeader>
       <b:PanelBody ui:field="content" />
     </b:Panel>
