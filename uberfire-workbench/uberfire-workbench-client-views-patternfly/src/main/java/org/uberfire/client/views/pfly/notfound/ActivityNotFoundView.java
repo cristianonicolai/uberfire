@@ -18,15 +18,12 @@ package org.uberfire.client.views.pfly.notfound;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.gwtbootstrap3.client.ui.Button;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.workbench.widgets.notfound.ActivityNotFoundPresenter;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * Gets shown inside a popup activity when the PlaceManager can't find a particular place.
@@ -38,10 +35,7 @@ public class ActivityNotFoundView extends Composite implements ActivityNotFoundP
     private ActivityNotFoundPresenter presenter;
 
     @Inject @DataField
-    private Label requestedPlaceIdentifier;
-
-    @Inject @DataField
-    private Button okButton;
+    private Span identifier = new Span();
 
     @Override
     public void init( final ActivityNotFoundPresenter presenter ) {
@@ -49,13 +43,9 @@ public class ActivityNotFoundView extends Composite implements ActivityNotFoundP
     }
 
     @Override
-    public void setRequestedPlaceIdentifier( String identifier ) {
-        requestedPlaceIdentifier.setText( identifier );
-    }
-
-    @EventHandler("okButton")
-    public void onClickOkButton( final ClickEvent event ) {
-        presenter.close();
+    public void setRequestedPlaceIdentifier( final String identifier ) {
+        GWT.log("setRequestedPlaceIdentifier");
+        this.identifier.setHTML(identifier);
     }
 
 }

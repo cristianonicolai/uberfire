@@ -1,10 +1,9 @@
 package org.uberfire.client.views.pfly.modal;
 
-import com.google.gwt.core.client.GWT;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.SimplePanel;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
@@ -14,22 +13,19 @@ import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.Attributes;
+import org.gwtbootstrap3.client.ui.constants.ButtonDismiss;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.uberfire.client.resources.WorkbenchResources;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-
-import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 /**
  * A modal dialog that floats above the workbench. Each instance can only be shown once.
  */
 @Dependent
-public class Bs3Modal extends Composite {
-
-    private final Modal modal = new Modal();
+public class Bs3Modal extends Modal {
 
     private final ModalBody body = new ModalBody();
 
@@ -40,28 +36,20 @@ public class Bs3Modal extends Composite {
      */
     boolean hasBeenShown;
 
-    /**
-     * This is a CDI bean. It should be instantiated through the Errai bean manager.
-     */
     public Bs3Modal() {
-    }
+        this.add(body);
+        this.add(footer);
 
-    @PostConstruct
-    void setup() {
-        modal.add(body);
-        modal.add(footer);
-
-        modal.setDataBackdrop(ModalBackdrop.STATIC);
-        modal.setFade(true);
-        modal.getElement().setAttribute(Attributes.ROLE, "dialog");
-        modal.getElement().setAttribute(Attributes.TABINDEX, "-1");
+        this.setDataBackdrop(ModalBackdrop.STATIC);
+        this.setFade(true);
+        this.getElement().setAttribute(Attributes.ROLE, "dialog");
+        this.getElement().setAttribute(Attributes.TABINDEX, "-1");
+        this.addStyleName(WorkbenchResources.INSTANCE.CSS().modal());
 
         final Button close = new Button("OK");
-        close.getElement().setAttribute(Attributes.DATA_DISMISS, "modal");
+        close.setDataDismiss(ButtonDismiss.MODAL);
+        close.addStyleName("btn-primary");
         footer.add(close);
-
-        final SimplePanel panel = new SimplePanel( modal );
-        initWidget( panel );
     }
 
     /**
@@ -72,12 +60,10 @@ public class Bs3Modal extends Composite {
      */
     public void show( final Command afterShown,
                       final Command afterClosed ) {
-        if ( hasBeenShown ) {
-            throw new IllegalStateException( "This modal has already been shown. Create a new instance if you want to show another modal." );
-        }
+
         checkNotNull( "afterShown", afterShown );
         checkNotNull( "afterClosed", afterClosed );
-        modal.addShownHandler( new ModalShownHandler() {
+        this.addShownHandler( new ModalShownHandler() {
             @Override
             public void onShown( final ModalShownEvent showEvent ) {
                 if ( afterShown != null ) {
@@ -85,7 +71,7 @@ public class Bs3Modal extends Composite {
                 }
             }
         } );
-        modal.addHiddenHandler( new ModalHiddenHandler() {
+        this.addHiddenHandler( new ModalHiddenHandler() {
             @Override
             public void onHidden( final ModalHiddenEvent hiddenEvent ) {
                 if ( afterClosed != null ) {
@@ -93,11 +79,15 @@ public class Bs3Modal extends Composite {
                 }
             }
         } );
-        modal.show();
+        this.show();
     }
 
-    public void hide() {
-        modal.hide();
+    @Override
+    public void show() {
+        if ( hasBeenShown ) {
+            throw new IllegalStateException( "This modal has already been shown. Create a new instance if you want to show another modal." );
+        }
+        super.show();
     }
 
     /**
@@ -111,7 +101,7 @@ public class Bs3Modal extends Composite {
     }
 
     public void setModalTitle(final String title){
-        modal.setTitle(SafeHtmlUtils.htmlEscape(title));
+        this.setTitle(SafeHtmlUtils.htmlEscape(title));
     }
 
     /**

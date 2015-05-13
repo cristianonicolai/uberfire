@@ -40,7 +40,7 @@ public class ErrorPopupView extends Composite implements ErrorPopupPresenter.Vie
                              final Command afterShow,
                              final Command afterClose ) {
 
-        Bs3Modal modal = modalFactory.get();
+        final Bs3Modal modal = modalFactory.get();
         modal.setModalTitle("Error");
         modal.setContent( new HTML(SafeHtmlUtils.fromString(msg)) );
         modal.show( afterShow, afterClose );

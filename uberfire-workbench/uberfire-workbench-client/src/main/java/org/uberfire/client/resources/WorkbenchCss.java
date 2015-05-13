@@ -53,4 +53,7 @@ public interface WorkbenchCss
 
     @ClassName("uf-split-layout-panel-vdragger")
     String splitLayoutPanelVDragger();
+
+    @ClassName("uf-modal")
+    String modal();
 }

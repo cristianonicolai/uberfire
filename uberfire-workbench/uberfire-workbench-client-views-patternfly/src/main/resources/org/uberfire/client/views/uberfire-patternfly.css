@@ -81,3 +81,7 @@
 .uf-tabbar-panel-nav-tabs .uf-activeNavTabs {
 
 }
+
+.uf-modal .modal-footer {
+  margin-top: 0px;
+}
