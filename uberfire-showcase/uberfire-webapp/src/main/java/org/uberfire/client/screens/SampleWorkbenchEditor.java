@@ -24,14 +24,14 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.workbench.type.AnyResourceType;
 
-@WorkbenchEditor(identifier = "SampleEditor", supportedTypes = AnyResourceType.class)
-public class SampleEditor {
+@WorkbenchEditor(identifier = "SampleWorkbenchEditor", supportedTypes = AnyResourceType.class)
+public class SampleWorkbenchEditor {
 
     private final Label view = new Label("This screen is always displayed as editor.");
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Sample Editor";
+        return "Sample Workbench Editor";
     }
 
     @WorkbenchPartView
