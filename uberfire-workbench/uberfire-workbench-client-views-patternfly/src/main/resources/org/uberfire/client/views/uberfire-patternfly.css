@@ -33,7 +33,11 @@
   margin-top: -4px;
 }
 
-.uf-listbar-panel-header-toolbar > .dropdown > .btn {
+.uf-listbar-panel-header .dropdown-menu {
+  margin-top: 5px;
+}
+
+.uf-listbar-panel-header-toolbar .dropdown > .btn {
   vertical-align: baseline !important;
 }
 
