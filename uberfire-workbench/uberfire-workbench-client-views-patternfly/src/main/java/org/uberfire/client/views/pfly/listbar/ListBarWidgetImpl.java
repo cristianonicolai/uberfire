@@ -56,13 +56,17 @@ import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.DropDown;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.ListItem;
 import org.gwtbootstrap3.client.ui.NavbarLink;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.html.Span;
+import org.gwtbootstrap3.client.ui.html.Strong;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.ioc.client.container.IOCResolutionException;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -668,16 +672,32 @@ public class ListBarWidgetImpl
      */
     private void refillPartChooserList() {
         titleDropdownMenu.clear();
-        for ( final PartDefinition part : parts ) {
-            final String title = ( (WorkbenchPartPresenter.View) partContentView.get( part ).getWidget( 0 ) ).getPresenter().getTitle();
-            final AnchorListItem selectPartEntry = new AnchorListItem( title );
-            selectPartEntry.addClickHandler( new ClickHandler() {
-                @Override
-                public void onClick( final ClickEvent event ) {
-                    selectPart( part );
-                }
-            } );
-            titleDropdownMenu.add(selectPartEntry);
+        if ( currentPart != null ) {
+            final String ctitle = ((WorkbenchPartPresenter.View) partContentView.get(currentPart.getK1()).getWidget(0)).getPresenter().getTitle();
+            final ListItem currentPartEntry = new ListItem();
+            final Anchor anchor = new Anchor();
+            final Strong strong = new Strong(ctitle);
+            anchor.add( strong );
+            final Icon icon = new Icon(IconType.CHECK);
+            final Span span = new Span();
+            span.add( icon );
+            span.addStyleName(Styles.PULL_RIGHT);
+            anchor.add(span);
+
+            currentPartEntry.add( anchor );
+            titleDropdownMenu.add( currentPartEntry );
+
+            for (final PartDefinition part : parts) {
+                final String title = ((WorkbenchPartPresenter.View) partContentView.get(part).getWidget(0)).getPresenter().getTitle();
+                final AnchorListItem selectPartEntry = new AnchorListItem(title);
+                selectPartEntry.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(final ClickEvent event) {
+                        selectPart(part);
+                    }
+                });
+                titleDropdownMenu.add(selectPartEntry);
+            }
         }
     }
 
