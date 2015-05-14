@@ -278,7 +278,7 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
         }
     }
 
-    private static final int DEFAULT_SPLITTER_SIZE = 3;
+    private static final int DEFAULT_SPLITTER_SIZE = 1;
 
     /**
      * The element that masks the screen so we can catch mouse events over
