@@ -49,13 +49,9 @@
   margin-right: -5px;
 }
 
-.uf-listbar-panel-header-toolbar .dropdown-menu > li {
-  padding-top: 3px;
-  padding-bottom: 3px;
-}
-
 .uf-listbar-panel-header-toolbar .dropdown-menu > li > a {
   padding: 0px;
+  height: 28px;
 }
 
 .uf-listbar-panel-header-toolbar > li > a {
