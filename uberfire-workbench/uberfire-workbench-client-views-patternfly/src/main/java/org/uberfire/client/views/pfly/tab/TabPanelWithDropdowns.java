@@ -111,7 +111,7 @@ public class TabPanelWithDropdowns extends Composite {
     /**
      * Registers a handler that is notified just after any tab in this panel (nested under a dropdown or not) is shown.
      *
-     * @param tabShowHandler the handler that will receive the notifications.
+     * @param tabShownHandler the handler that will receive the notifications.
      */
     public HandlerRegistration addShownHandler( TabShownHandler tabShownHandler ) {
         return addHandler( tabShownHandler, TabShownEvent.getType() );
