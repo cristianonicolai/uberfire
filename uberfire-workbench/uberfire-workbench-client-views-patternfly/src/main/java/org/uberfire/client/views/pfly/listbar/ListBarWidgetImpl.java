@@ -59,6 +59,7 @@ import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.ListItem;
 import org.gwtbootstrap3.client.ui.NavbarLink;
+import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
@@ -150,6 +151,9 @@ public class ListBarWidgetImpl
 
     @UiField
     PanelHeader header;
+
+    @UiField
+    Panel panel;
 
     @UiField
     ButtonGroup contextMenu;
@@ -268,14 +272,14 @@ public class ListBarWidgetImpl
 
 //        this.menuArea.setVisible( false );
         if ( isMultiPart ) {
-            closeButton.addDomHandler(new ClickHandler() {
+            closeButton.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
                     if (currentPart != null) {
                         panelManager.closePart(currentPart.getK1());
                     }
                 }
-            }, ClickEvent.getType());
+            });
         } else {
 //            dropdownCaretContainer.setVisible( false );
 //            closeButtonContainer.setVisible( false );
@@ -345,16 +349,16 @@ public class ListBarWidgetImpl
     @Override
     public void clear() {
         contextMenu.clear();
-//        menuArea.setVisible( false );
         header.clear();
+        panel.clear();
         titleAnchor.clear();
         content.clear();
 
         parts.clear();
         partContentView.clear();
         partTitle.clear();
-        currentPart = null;
         titleDropdownMenu.clear();
+        currentPart = null;
     }
 
     @Override
@@ -366,7 +370,6 @@ public class ListBarWidgetImpl
             return;
         }
 
-//        menuArea.setVisible( true );
         parts.add( partDefinition );
 
         final FlowPanel panel = new FlowPanel();
@@ -446,6 +449,9 @@ public class ListBarWidgetImpl
     }
 
     private void setupTitleDropdown() {
+        if( currentPart == null ){
+            return;
+        }
         final Widget title = partTitle.get( currentPart.getK1() );
         if ( isMultiPart ) {
             titleDropDown.setVisible(true);
