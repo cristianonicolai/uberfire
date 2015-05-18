@@ -18,16 +18,32 @@
 
 package org.uberfire.client.screens;
 
-import com.google.gwt.user.client.ui.Label;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.uberfire.client.annotations.WorkbenchEditor;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.views.pfly.multipage.PageImpl;
 import org.uberfire.client.workbench.type.AnyResourceType;
+import org.uberfire.client.workbench.widgets.multipage.MultiPageEditor;
 
+@Dependent
 @WorkbenchEditor(identifier = "SampleWorkbenchEditor", supportedTypes = AnyResourceType.class)
 public class SampleWorkbenchEditor {
 
-    private final Label view = new Label("This screen is always displayed as editor.");
+    @Inject
+    private MultiPageEditor pageEditor;
+
+    @PostConstruct
+    public void init(){
+        pageEditor.addPage( new PageImpl( new Paragraph( "Source Tab" ), "Source" ));
+        pageEditor.addPage( new PageImpl( new Paragraph( "Overview Tab" ), "Overview" ));
+        pageEditor.addPage( new PageImpl( new Paragraph( "Metadata Tab" ), "Metadata" ));
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -35,7 +51,7 @@ public class SampleWorkbenchEditor {
     }
 
     @WorkbenchPartView
-    public Label getView() {
-        return view;
+    public IsWidget getView() {
+        return pageEditor.getView();
     }
 }

@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
 import org.gwtbootstrap3.client.shared.event.TabShownEvent;
@@ -18,7 +22,6 @@ import org.gwtbootstrap3.client.shared.event.TabShownHandler;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.NavTabs;
-import org.gwtbootstrap3.client.ui.Navbar;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPanel;
@@ -26,14 +29,6 @@ import org.gwtbootstrap3.client.ui.constants.IconPosition;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.workbench.widgets.listbar.ResizeFocusPanel;
 
 /**
  * A Bootstrap3 TabPanel which supports a mix of normal tabs and tabs that are dropdown menus. Selecting an item from a
@@ -76,7 +71,9 @@ public class TabPanelWithDropdowns extends Composite {
         @Override
         public void onShow( TabShowEvent showEvent ) {
             for ( Widget w : activatableWidgets ) {
-                w.removeStyleName( Styles.ACTIVE );
+                if(showEvent.getTab().asWidget() != w) {
+                    w.removeStyleName( Styles.ACTIVE );
+                }
             }
             TabPanelWithDropdowns.this.fireEvent( showEvent );
         }
@@ -321,6 +318,38 @@ public class TabPanelWithDropdowns extends Composite {
     public TabPanelEntry getActiveTab() {
         for ( TabPanelEntry entry : allContentTabs ) {
             if ( entry.isActive() ) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the tab index associated with the current selected tab.
+     * @return the currently selected (active) tab index. -1 If there is no active tab
+     */
+    public int getSelectedTabIndex() {
+        final TabPanelEntry activeTab = getActiveTab();
+        if( activeTab == null ){
+            return -1;
+        } else {
+            return tabBar.getWidgetIndex( activeTab.getTabWidget() );
+        }
+    }
+
+    public void selectTabIndex(int index) {
+        final TabListItem item = (TabListItem)tabBar.getWidget( index );
+        if( item != null ){
+            item.showTab();
+        }
+    }
+
+    /**
+     * Finds the TabPanelEntry associated with the given tab widget, even if it's nested in a DropdownTab.
+     */
+    public TabPanelEntry findEntryForTabWidget( final TabListItem tabWidget ) {
+        for ( TabPanelEntry entry : allContentTabs ) {
+            if ( entry.getTabWidget() == tabWidget ) {
                 return entry;
             }
         }

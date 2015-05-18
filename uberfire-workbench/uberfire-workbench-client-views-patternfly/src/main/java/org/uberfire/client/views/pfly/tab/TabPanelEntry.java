@@ -95,7 +95,7 @@ public class TabPanelEntry implements HasActive {
      */
     @Override
     public boolean isActive() {
-        return tab.isActive();
+        return contentPane.isActive();
     }
 
     /**
@@ -104,13 +104,14 @@ public class TabPanelEntry implements HasActive {
     @Override
     public void setActive( boolean b ) {
         tab.setActive( b );
+        contentPane.setActive( b );
     }
 
     /**
      * Makes this tab show itself and become the active tab, replacing whatever tab was previously active.
      */
     public void showTab() {
-        tab.showTab(false);
+        tab.showTab();
     }
 
     @Override

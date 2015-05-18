@@ -25,7 +25,6 @@ import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
 import org.gwtbootstrap3.client.shared.event.TabShownEvent;
 import org.gwtbootstrap3.client.shared.event.TabShownHandler;
-import org.gwtbootstrap3.client.ui.TabListItem;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.resources.WorkbenchResources;
 import org.uberfire.client.views.pfly.tab.TabPanelWithDropdowns.DropDownTab;
@@ -88,7 +87,7 @@ public class UberTabPanel extends ResizeComposite implements MultiPartWidget, Cl
             @Override
             public void onShow( TabShowEvent e ) {
                 if ( e.getTab() != null ) {
-                    TabPanelEntry selected = findEntryForTabWidget( e.getTab() );
+                    final TabPanelEntry selected = tabPanel.findEntryForTabWidget( e.getTab() );
                     BeforeSelectionEvent.fire( UberTabPanel.this, tabInvertedIndex.get( selected ).getPresenter().getDefinition() );
                 }
             }
@@ -99,7 +98,7 @@ public class UberTabPanel extends ResizeComposite implements MultiPartWidget, Cl
             public void onShown( TabShownEvent e ) {
                 onResize();
                 if ( e.getTab() != null ) {
-                    TabPanelEntry selected = findEntryForTabWidget( e.getTab() );
+                    final TabPanelEntry selected = tabPanel.findEntryForTabWidget( e.getTab() );
                     SelectionEvent.fire( UberTabPanel.this, tabInvertedIndex.get( selected ).getPresenter().getDefinition() );
                 }
             }
@@ -325,32 +324,8 @@ public class UberTabPanel extends ResizeComposite implements MultiPartWidget, Cl
         }
     }
 
-    /**
-     * Gets the selected tab, even if it's nested in the DropdownTab. Returns null if no tab is selected.
-     */
-    private TabPanelEntry getSelectedTab() {
-        for ( TabPanelEntry tab : tabInvertedIndex.keySet() ) {
-            if ( tab.isActive() ) {
-                return tab;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Finds the TabPanelEntry associated with the given tab widget, even if it's nested in a DropdownTab.
-     */
-    private TabPanelEntry findEntryForTabWidget( TabListItem tabWidget ) {
-        for ( TabPanelEntry tab : tabInvertedIndex.keySet() ) {
-            if ( tab.getTabWidget() == tabWidget ) {
-                return tab;
-            }
-        }
-        return null;
-    }
-
     private View getSelectedPart() {
-        return tabInvertedIndex.get( getSelectedTab() );
+        return tabInvertedIndex.get( tabPanel.getActiveTab() );
     }
 
     private void fireFocusGained() {
