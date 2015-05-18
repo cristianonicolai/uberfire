@@ -18,7 +18,6 @@ package org.uberfire.client.views.pfly.notfound;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -44,7 +43,6 @@ public class ActivityNotFoundView extends Composite implements ActivityNotFoundP
 
     @Override
     public void setRequestedPlaceIdentifier( final String identifier ) {
-        GWT.log("setRequestedPlaceIdentifier");
         this.identifier.setHTML(identifier);
     }
 
