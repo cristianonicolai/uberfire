@@ -269,6 +269,7 @@
           <runTarget>showcase.html</runTarget>
           <hostedWebapp>src/main/webapp</hostedWebapp>
           <module>org.uberfire.FastCompiledUberfireShowcase</module>
+          <draftCompile>true</draftCompile>
           <compileSourcesArtifacts>
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
