@@ -2,6 +2,7 @@ package org.uberfire.client.views.pfly.maximize;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.constants.IconSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -31,6 +32,11 @@ public class MaximizeToggleButton extends AnchorListItem implements View {
     }
 
     @Override
+    public HandlerRegistration addClickHandler( ClickHandler handler ) {
+        return this.addDomHandler( handler, ClickEvent.getType() );
+    }
+
+    @Override
     public void init( MaximizeToggleButtonPresenter presenter ) {
         this.presenter = checkNotNull( "presenter", presenter );
     }
@@ -44,12 +50,10 @@ public class MaximizeToggleButton extends AnchorListItem implements View {
         if ( wasMaximized ) {
             if ( unmaximizeCommand != null ) {
                 unmaximizeCommand.execute();
-                setTitle( WorkbenchConstants.INSTANCE.maximizePanel() );
             }
         } else {
             if ( maximizeCommand != null ) {
                 maximizeCommand.execute();
-                setTitle( WorkbenchConstants.INSTANCE.minimizePanel() );
             }
         }
     }
@@ -100,11 +104,11 @@ public class MaximizeToggleButton extends AnchorListItem implements View {
     public void setMaximized( boolean maximized ) {
         this.maximized = maximized;
         if ( maximized ) {
-            setIcon(IconType.COMPRESS);
+            setIcon( IconType.COMPRESS );
             setTitle( WorkbenchConstants.INSTANCE.minimizePanel() );
         } else {
-            setIcon(IconType.EXPAND);
-            setTitle(WorkbenchConstants.INSTANCE.maximizePanel());
+            setIcon( IconType.EXPAND );
+            setTitle( WorkbenchConstants.INSTANCE.maximizePanel() );
         }
     }
 }
