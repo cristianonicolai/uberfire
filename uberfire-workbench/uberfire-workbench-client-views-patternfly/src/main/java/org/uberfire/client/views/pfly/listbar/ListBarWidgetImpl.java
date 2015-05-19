@@ -285,25 +285,30 @@ public class ListBarWidgetImpl
 //            closeButtonContainer.setVisible( false );
         }
 
+        container.addFocusHandler( new FocusHandler() {
+            @Override
+            public void onFocus( FocusEvent event ) {
+                if ( currentPart != null && currentPart.getK1() != null ) {
+                    selectPart( currentPart.getK1() );
+                }
+            }
+        } );
+
 //        if ( isPropertyListbarContextDisable() ) {
 //            contextDisplay.removeFromParent();
 //        }
 
-//        content.getElement().getStyle().setPosition( Position.RELATIVE );
-//        content.getElement().getStyle().setTop( 0.0, Unit.PX );
-//        content.getElement().getStyle().setLeft( 0.0, Unit.PX );
-//        content.getElement().getStyle().setWidth( 100.0, Unit.PCT );
-        // height is calculated and set in onResize()
-        if(isDndEnabled){
+//        if(isDndEnabled){
 //            dragHandle = new DragArea(drag);
 //           and  initWidget(dragHandle);
-            drag.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    GWT.log("on click!");
-                }
-            });
-        }
+//            dndManager.makeDraggable( currentPart, drag );
+//            drag.addClickHandler(new ClickHandler() {
+//                @Override
+//                public void onClick(ClickEvent event) {
+//                    GWT.log("on click!");
+//                }
+//            });
+//        }
     }
 
     boolean isPropertyListbarContextDisable() {
@@ -326,14 +331,14 @@ public class ListBarWidgetImpl
 
     @Override
     public void setExpanderCommand( final Command command ) {
-        if ( !isPropertyListbarContextDisable() ) {
+//        if ( !isPropertyListbarContextDisable() ) {
 //            contextDisplay.addClickHandler( new ClickHandler() {
 //                @Override
 //                public void onClick( ClickEvent event ) {
 //                    command.execute();
 //                }
 //            } );
-        }
+//        }
     }
 
     @Override
@@ -364,7 +369,6 @@ public class ListBarWidgetImpl
     @Override
     public void addPart( final WorkbenchPartPresenter.View view ) {
         final PartDefinition partDefinition = view.getPresenter().getDefinition();
-
         if ( parts.contains( partDefinition ) ) {
             selectPart( partDefinition );
             return;
@@ -395,7 +399,7 @@ public class ListBarWidgetImpl
 //        this.title.clear();
 //
 //        final Widget title = partTitle.get( partDefinition );
-//        this.title.add(title);
+//        this.title.add( title );
     }
 
     private Widget buildTitle( final String title , final IsWidget titleDecoration) {
