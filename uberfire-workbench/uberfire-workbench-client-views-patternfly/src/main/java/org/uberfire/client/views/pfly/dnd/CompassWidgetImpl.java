@@ -38,8 +38,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Heading;
-import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.uberfire.client.resources.WorkbenchResources;
 import org.uberfire.client.workbench.widgets.dnd.CompassWidget;
 import org.uberfire.workbench.model.CompassPosition;
@@ -60,8 +58,6 @@ public class CompassWidgetImpl implements CompassWidget {
     private static CompassWidgetBinder uiBinder = GWT.create( CompassWidgetBinder.class );
 
     private Element dropTargetHighlight;
-
-    private Heading dropTargetHighlightText;
 
     @UiField
     DockLayoutPanel container;
@@ -96,8 +92,6 @@ public class CompassWidgetImpl implements CompassWidget {
             dropTargetHighlight.getStyle().setPosition( Style.Position.ABSOLUTE );
             dropTargetHighlight.getStyle().setVisibility( Visibility.HIDDEN );
             dropTargetHighlight.setClassName( WorkbenchResources.INSTANCE.CSS().dropTargetHighlight() );
-            dropTargetHighlightText = new Heading( HeadingSize.H3 );
-            dropTargetHighlight.appendChild( dropTargetHighlightText.getElement() );
             Document.get().getBody().appendChild( dropTargetHighlight );
         }
 
