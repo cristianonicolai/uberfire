@@ -19,6 +19,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.uberfire.client.mvp.UIPart;
 import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.events.DropPlaceEvent;
@@ -42,11 +43,8 @@ import com.google.gwt.user.client.ui.Widget;
 @Dependent
 public class CompassDropController implements DropController {
 
-    private final CompassWidget compass = getCompassWidgetInstance();
-
-    CompassWidget getCompassWidgetInstance() {
-        return CompassWidget.getInstance();
-    }
+    @Inject
+    private CompassWidget compass;
 
     WorkbenchPanelView<?> dropTarget;
 

@@ -1,7 +1,5 @@
 package org.uberfire.client.workbench.widgets.dnd;
 
-import static org.mockito.Mockito.*;
-
 import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
 import org.uberfire.client.workbench.panels.WorkbenchPanelView;
@@ -9,6 +7,8 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.Position;
+
+import static org.mockito.Mockito.*;
 
 public class CompassDropControllerUnitTestWrapper extends CompassDropController {
 
@@ -22,19 +22,12 @@ public class CompassDropControllerUnitTestWrapper extends CompassDropController 
         workDragContextMock = mock( WorkbenchDragContext.class );
 
         when( dndManager.getWorkbenchContext() ).thenReturn( workDragContextMock );
+        mock = mock( CompassWidget.class );
     }
 
     @Override
     void firePartDroppedEvent( PlaceRequest place ) {
 
-    }
-
-    @Override
-    CompassWidget getCompassWidgetInstance() {
-        if ( mock == null ) {
-            mock = mock( CompassWidget.class );
-        }
-        return mock;
     }
 
     public void mockDropTargetPositionNone() {

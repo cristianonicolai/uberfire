@@ -17,57 +17,61 @@
  */
 
 .fa-muted {
-  color: #999999;
+    color: #999999;
+}
+
+.fa-active {
+    color: #0076b7;
 }
 
 .uf-listbar-panel {
-  border: none;
+    border: none;
 }
 
 .uf-listbar-panel-header {
-  background-color: #FFFFFF !important;
-  min-height: 36px;
+    background-color: #FFFFFF !important;
+    min-height: 36px;
 }
 
 .uf-listbar-panel-header .btn-toolbar {
-  margin-top: -4px;
+    margin-top: -4px;
 }
 
 .uf-listbar-panel-header .dropdown-menu {
-  margin-top: 5px;
+    margin-top: 5px;
 }
 
 .uf-listbar-panel-header-toolbar .dropdown > .btn {
-  vertical-align: baseline !important;
+    vertical-align: baseline !important;
 }
 
 .uf-listbar-panel-header-toolbar .dropdown-menu {
-  min-width: 26px;
-  max-width: 26px;
-  text-align: center;
-  margin-top: 7px;
-  margin-right: -5px;
+    min-width: 26px;
+    max-width: 26px;
+    text-align: center;
+    margin-top: 7px;
+    margin-right: -5px;
 }
 
 .uf-listbar-panel-header-toolbar .dropdown-menu > li > a {
-  padding: 0px;
-  height: 28px;
+    padding: 0px;
+    height: 28px;
 }
 
 .uf-listbar-panel-header-toolbar > li > a {
-  color: inherit;
+    color: inherit;
 }
 
 .uf-listbar-panel-header-title {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0px;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0px;
 }
 
 .uf-listbar-panel-header-title:hover,
 .uf-listbar-panel-header-title:focus {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 .uf-tabbar-panel {
@@ -75,7 +79,7 @@
 }
 
 .uf-tabbar-panel-nav-tabs {
-  padding-top: 1px;
+    padding-top: 1px;
 }
 
 .uf-tabbar-panel-nav-tabs .uf-activeNavTabs {
@@ -83,5 +87,42 @@
 }
 
 .uf-modal .modal-footer {
-  margin-top: 0px;
+    margin-top: 0px;
+}
+
+.uf-drop-target-highlight {
+    z-index: 100000;
+    border: 2px #0076b7 solid;
+    background-color: #199dde;
+    opacity: 0.50;
+    filter: alpha(opacity=50);
+}
+
+.uf-drop-target-compass {
+    z-index: 100001;
+    background-color: #fff;
+    border: 1px #ddd solid;
+}
+
+.uf-drop-target-compass-centre {
+    border: 1px #ddd solid;
+}
+
+.uf-drop-target-compass-west,
+.uf-drop-target-compass-east {
+    border-top: 1px #ddd solid;
+    border-bottom: 1px #ddd solid;
+}
+
+.uf-drop-target-compass-centre > i,
+.uf-drop-target-compass-west > i,
+.uf-drop-target-compass-east > i {
+    position: absolute;
+    top: 40%;
+    left: 35%;
+}
+
+.uf-drop-target-compass-north,
+.uf-drop-target-compass-south {
+    text-align: center;
 }

@@ -389,7 +389,7 @@ public class ListBarWidgetImpl
         title.ensureDebugId( DEBUG_TITLE_PREFIX + view.getPresenter().getTitle() );
 
         if ( isDndEnabled ) {
-            dndManager.makeDraggable( view, drag );
+            dndManager.makeDraggable( view, title );
         }
 
         scheduleResize();
@@ -404,7 +404,17 @@ public class ListBarWidgetImpl
 
     private Widget buildTitle( final String title , final IsWidget titleDecoration) {
         final String titleWidget = (titleDecoration instanceof Image) ? titleDecoration.toString() : "";
-        return new Text(SafeHtmlUtils.htmlEscape(titleWidget + " " + title));
+        final Text text = new Text( SafeHtmlUtils.htmlEscape( titleWidget + " " + title ) );
+        if( isMultiPart ){
+            final FlowPanel panel = new FlowPanel();
+            panel.add( text );
+            final Span caret = new Span();
+            caret.addStyleName(Styles.CARET);
+            panel.add(caret);
+            return new DragArea( panel );
+        } else {
+            return new DragArea( text );
+        }
     }
 
     @Override
@@ -461,9 +471,6 @@ public class ListBarWidgetImpl
             titleDropDown.setVisible(true);
             titleAnchor.clear();
             titleAnchor.add(title);
-            final Span caret = new Span();
-            caret.addStyleName(Styles.CARET);
-            titleAnchor.add(caret);
             refillPartChooserList();
         } else {
             titleHeading.setVisible(true);

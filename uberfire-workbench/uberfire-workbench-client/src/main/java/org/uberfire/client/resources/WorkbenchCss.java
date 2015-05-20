@@ -24,8 +24,10 @@ public interface WorkbenchCss
         extends
         CssResource {
 
+    @ClassName( "uf-drop-target-highlight" )
     String dropTargetHighlight();
 
+    @ClassName( "uf-drop-target-compass" )
     String dropTargetCompass();
 
     String notification();
