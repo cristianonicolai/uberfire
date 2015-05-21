@@ -74,6 +74,14 @@
     text-decoration: none;
 }
 
+.uf-listbar-panel-header-title .caret {
+    margin-left: 5px;
+}
+
+.uf-listbar-panel-header-title:hover .caret {
+    color: #0076b7;
+}
+
 .uf-tabbar-panel {
 
 }
