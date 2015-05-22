@@ -39,14 +39,10 @@ public abstract class AbstractSimpleWorkbenchPanelView<P extends WorkbenchPanelP
     @Inject
     protected ListBarWidget listBar;
 
-    @Inject
-    protected ContextPanel contextWidget;
-
     @PostConstruct
     void setup() {
         setupListBar();
 
-        getPartViewContainer().add( contextWidget );
         getPartViewContainer().add( listBar );
     }
 

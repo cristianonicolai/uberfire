@@ -52,8 +52,6 @@ public interface ListBarWidget extends MultiPartWidget {
 
     public void enableDnd();
 
-    public void setExpanderCommand( final Command command );
-
     /**
      * Returns the toggle button, which is initially hidden, that can be used to trigger maximizing and unmaximizing
      * of the panel containing this list bar. Make the button visible by calling {@link Widget#setVisible(boolean)}

@@ -41,6 +41,10 @@
     margin-top: 8px;
 }
 
+.uf-listbar-panel-header .dropdown-menu .pull-right i {
+    margin-left: 5px;
+}
+
 .uf-listbar-panel-header-toolbar .dropdown > .btn {
     vertical-align: baseline !important;
 }
