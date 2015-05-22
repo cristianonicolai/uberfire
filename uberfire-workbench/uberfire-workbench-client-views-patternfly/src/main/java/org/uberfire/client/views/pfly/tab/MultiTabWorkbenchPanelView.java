@@ -38,6 +38,7 @@ extends AbstractMultiPartWorkbenchPanelView<MultiTabWorkbenchPanelPresenter> {
 
     @Override
     protected MultiPartWidget setupWidget() {
+        uberTabPanel.addStyleName( "uf-multitab-panel" );
         Layouts.setToFillParent( uberTabPanel );
         addOnFocusHandler( uberTabPanel );
         addSelectionHandler( uberTabPanel );

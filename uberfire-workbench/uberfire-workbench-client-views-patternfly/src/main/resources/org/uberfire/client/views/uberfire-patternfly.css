@@ -102,6 +102,10 @@
 
 }
 
+.uf-multitab-panel .uf-tabbar-panel-nav-tabs .active:hover a {
+    cursor: move;
+}
+
 .uf-modal .modal-footer {
     margin-top: 0px;
 }

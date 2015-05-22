@@ -1,5 +1,12 @@
 package org.uberfire.client.views.pfly.tab;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasMouseDownHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.gwtbootstrap3.client.ui.base.HasActive;
@@ -68,7 +75,8 @@ public class TabPanelEntry implements HasActive {
     /**
      * Represents the tab widget that lives in the tab bar or under a dropdown tab.
      */
-    public static class DropDownTabListItem extends TabListItem {
+    public static class DropDownTabListItem extends TabListItem implements HasClickHandlers,
+            HasMouseDownHandlers {
 
         public DropDownTabListItem( String label ) {
             super( label );
@@ -87,6 +95,16 @@ public class TabPanelEntry implements HasActive {
          */
         public void addToAnchor( Widget w ) {
             anchor.add( w );
+        }
+
+        @Override
+        public HandlerRegistration addClickHandler( ClickHandler handler ) {
+            return addDomHandler( handler, ClickEvent.getType() );
+        }
+
+        @Override
+        public HandlerRegistration addMouseDownHandler( MouseDownHandler handler ) {
+            return addDomHandler( handler, MouseDownEvent.getType() );
         }
     }
 
