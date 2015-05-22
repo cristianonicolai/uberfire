@@ -38,7 +38,7 @@
 }
 
 .uf-listbar-panel-header .dropdown-menu {
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 .uf-listbar-panel-header .dropdown-menu .pull-right i {
@@ -69,7 +69,7 @@
 .uf-listbar-panel-header-title {
     font-size: 16px;
     font-weight: 500;
-    margin: 0px;
+    margin-top: -5px;
 }
 
 .uf-listbar-panel-header-title:hover,
@@ -84,6 +84,10 @@
 
 .uf-listbar-panel-header-title:hover .caret {
     color: #0076b7;
+}
+
+.uf-listbar-panel-header-title a {
+    color: inherit;
 }
 
 .uf-tabbar-panel {

@@ -55,7 +55,6 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.DropDown;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
-import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.ListItem;
 import org.gwtbootstrap3.client.ui.NavbarLink;
@@ -69,8 +68,10 @@ import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.html.Span;
 import org.gwtbootstrap3.client.ui.html.Strong;
 import org.gwtbootstrap3.client.ui.html.Text;
+import org.jboss.errai.ioc.client.container.IOCResolutionException;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.util.Layouts;
+import org.uberfire.client.views.pfly.dropdown.ListDropdown;
 import org.uberfire.client.views.pfly.maximize.MaximizeToggleButton;
 import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.panels.MaximizeToggleButtonPresenter;
@@ -137,13 +138,7 @@ public class ListBarWidgetImpl
     FocusPanel container;
 
     @UiField
-    Anchor titleAnchor;
-
-    @UiField
-    DropDown titleDropDown;
-
-    @UiField
-    Heading titleHeading;
+    ListDropdown titleDropDown;
 
     @UiField
     PanelHeader header;
@@ -162,9 +157,6 @@ public class ListBarWidgetImpl
 
     @UiField
     DropDownMenu toolBarDropDownMenu;
-
-    @UiField
-    DropDownMenu titleDropdownMenu;
 
     @UiField
     MaximizeToggleButton maximizeButton;
@@ -197,6 +189,7 @@ public class ListBarWidgetImpl
     void postConstruct() {
         initWidget( uiBinder.createAndBindUi( this ) );
         maximizeButtonPresenter = new MaximizeToggleButtonPresenter( maximizeButton );
+        titleDropDown.setHideOnSingleElement( getListbarPreferences().isHideTitleDropDownOnSingleElement() );
         setupEventHandlers();
         setup( true, true );
 
@@ -242,6 +235,14 @@ public class ListBarWidgetImpl
             }
         });
 
+        closeButton.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                if ( currentPart != null ) {
+                    panelManager.closePart( currentPart.getK1() );
+                }
+            }
+        } );
     }
 
     @Override
@@ -249,28 +250,14 @@ public class ListBarWidgetImpl
                        boolean isDndEnabled ) {
         this.isMultiPart = isMultiPart;
         this.isDndEnabled = isDndEnabled;
+    }
 
-        if ( isMultiPart ) {
-            closeButton.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    if (currentPart != null) {
-                        panelManager.closePart(currentPart.getK1());
-                    }
-                }
-            });
+    ListbarPreferences getListbarPreferences(){
+        try {
+            return optionalListBarPrefs.isUnsatisfied() ? new ListbarPreferences() : optionalListBarPrefs.get();
+        } catch ( IOCResolutionException e ) {
+            return new ListbarPreferences();
         }
-
-        container.addFocusHandler( new FocusHandler() {
-            @Override
-            public void onFocus( FocusEvent event ) {
-                if ( currentPart != null && currentPart.getK1() != null ) {
-                    selectPart( currentPart.getK1() );
-                }
-            }
-        } );
-
-
     }
 
     @Override
@@ -298,10 +285,7 @@ public class ListBarWidgetImpl
         parts.clear();
         partContentView.clear();
         partTitle.clear();
-        titleDropdownMenu.clear();
         titleDropDown.clear();
-        titleAnchor.clear();
-        titleHeading.clear();
         currentPart = null;
     }
 
@@ -331,22 +315,15 @@ public class ListBarWidgetImpl
             dndManager.makeDraggable( view, title );
         }
 
+        setupTitleDropdown();
+
         scheduleResize();
     }
 
     private Widget buildTitle( final String title , final IsWidget titleDecoration) {
         final String titleWidget = (titleDecoration instanceof Image) ? titleDecoration.toString() : "";
         final Text text = new Text( SafeHtmlUtils.htmlEscape( titleWidget + " " + title ) );
-        if( isMultiPart ){
-            final FlowPanel panel = new FlowPanel();
-            panel.add( text );
-            final Span caret = new Span();
-            caret.addStyleName(Styles.CARET);
-            panel.add(caret);
-            return new DragArea( panel );
-        } else {
-            return new DragArea( text );
-        }
+        return new DragArea( text );
     }
 
     @Override
@@ -394,17 +371,10 @@ public class ListBarWidgetImpl
         if( currentPart == null ){
             return;
         }
+        titleDropDown.clear();
         final Widget title = partTitle.get( currentPart.getK1() );
-        if ( isMultiPart ) {
-            titleDropDown.setVisible(true);
-            titleAnchor.clear();
-            titleAnchor.add(title);
-            refillPartChooserList();
-        } else {
-            titleHeading.setVisible(true);
-            titleHeading.clear();
-            titleHeading.add(title);
-        }
+        titleDropDown.add( title );
+        refillPartChooserList();
     }
 
     private void setupContextMenu() {
@@ -626,10 +596,9 @@ public class ListBarWidgetImpl
      * parts.
      */
     private void refillPartChooserList() {
-        titleDropdownMenu.clear();
         if ( currentPart != null ) {
             final String ctitle = ((WorkbenchPartPresenter.View) partContentView.get(currentPart.getK1()).getWidget(0)).getPresenter().getTitle();
-            titleDropdownMenu.add( buildTitleDropdownMenuItem( new Strong(ctitle), currentPart.getK1() ) );
+            titleDropDown.add( buildTitleDropdownMenuItem( new Strong(ctitle), currentPart.getK1() ) );
 
             for (final PartDefinition part : parts) {
                 final String title = ((WorkbenchPartPresenter.View) partContentView.get(part).getWidget(0)).getPresenter().getTitle();
@@ -640,7 +609,7 @@ public class ListBarWidgetImpl
                         selectPart( part );
                     }
                 }, ClickEvent.getType() );
-                titleDropdownMenu.add(selectPartEntry);
+                titleDropDown.add(selectPartEntry);
             }
         }
     }
