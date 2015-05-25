@@ -388,6 +388,9 @@ public class ListBarWidgetImpl
                 }
             }
         }
+        if(contextMenu.getWidgetCount() == 0){
+            contextMenu.setVisible( false );
+        }
     }
 
     @Override
