@@ -616,18 +616,12 @@ public class ListBarWidgetImpl
 
     private Widget buildTitleDropdownMenuItem( final Widget title, final PartDefinition part ){
         final ListItem li = new ListItem();
-        final Anchor anchor = new Anchor();
-        anchor.add( title );
-        final Icon icon = new Icon(IconType.TIMES);
         final Span span = new Span();
-        span.add( icon );
-        span.addStyleName(Styles.PULL_RIGHT);
-        span.addDomHandler( new ClickHandler() {
-            @Override
-            public void onClick( final ClickEvent event ) {
-                panelManager.closePart(part);
-            }
-        }, ClickEvent.getType() );
+        span.add( title );
+        final Icon icon = new Icon( IconType.TIMES);
+        icon.addStyleName( Styles.PULL_RIGHT );
+        final Anchor anchor = new Anchor();
+        anchor.add( icon );
         anchor.add( span );
         li.add( anchor );
         return li;

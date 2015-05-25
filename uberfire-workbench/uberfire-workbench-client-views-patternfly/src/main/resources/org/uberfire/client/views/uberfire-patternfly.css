@@ -41,8 +41,12 @@
     margin-top: 4px;
 }
 
-.uf-listbar-panel-header .dropdown-menu .pull-right i {
-    margin-left: 5px;
+.uf-listbar-panel-header .dropdown-menu i {
+    margin-top: 4px;
+}
+
+.uf-listbar-panel-header .dropdown-menu span {
+    margin-right: 15px;
 }
 
 .uf-listbar-panel-header-toolbar .dropdown > .btn {
