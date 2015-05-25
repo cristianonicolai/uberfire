@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
@@ -67,6 +68,7 @@ public abstract class AbstractMarkdownScreen {
                 }).readAllString(o);
             }
         }).get(getMarkdownFileURI());
+        markdown.getElement().getStyle().setPadding( 15, Style.Unit.PX );
     }
 
     @WorkbenchPartView

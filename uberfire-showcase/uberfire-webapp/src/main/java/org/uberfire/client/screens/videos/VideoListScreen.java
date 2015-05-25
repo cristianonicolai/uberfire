@@ -22,10 +22,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
@@ -60,7 +61,9 @@ public class VideoListScreen {
 
     @WorkbenchPartView
     public IsWidget getView() {
-        final VerticalPanel widgets = new VerticalPanel();
+        final FlowPanel widgets = new FlowPanel();
+
+        widgets.getElement().getStyle().setPadding( 15, Style.Unit.PX );
 
         for ( final YouTubeVideo video : VIDEOS ) {
 
