@@ -28,6 +28,10 @@
     border: none;
 }
 
+.uf-listbar-panel .panel-body {
+    padding: 0px;
+}
+
 .uf-listbar-panel-header {
     background-color: #FFFFFF !important;
     min-height: 36px;
