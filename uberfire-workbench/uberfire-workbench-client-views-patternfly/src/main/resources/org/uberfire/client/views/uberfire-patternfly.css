@@ -154,3 +154,19 @@
 .uf-drop-target-compass-south {
     text-align: center;
 }
+
+.uf-list-dropdown {
+
+}
+
+.uf-list-dropdown-single {
+
+}
+
+.uf-list-dropdown-single a:hover {
+    cursor: default;
+}
+
+.uf-list-dropdown-multi {
+
+}

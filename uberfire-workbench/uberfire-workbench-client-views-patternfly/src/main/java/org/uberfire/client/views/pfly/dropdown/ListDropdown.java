@@ -86,11 +86,19 @@ public class ListDropdown extends DropDown {
         if( hideOnSingleElement && dropDownMenu.getWidgetCount() == 1 && anchor.getWidgetIndex( caret ) != -1 ){
             anchor.remove( caret );
             anchor.setDataToggle( null );
+            toggleStyles( true );
         } else if( anchor.getWidgetIndex( caret ) == -1){
             anchor.add( caret );
             anchor.setDataToggle( Toggle.DROPDOWN );
             anchor.setDataTargetWidget( this );
+            toggleStyles( false );
         }
+    }
+
+    private void toggleStyles(boolean single){
+        this.removeStyleName( "uf-list-dropdown-single" );
+        this.removeStyleName( "uf-list-dropdown-multi" );
+        this.addStyleName( single ? "uf-list-dropdown-single" : "uf-list-dropdown-multi" );
     }
 
 }
