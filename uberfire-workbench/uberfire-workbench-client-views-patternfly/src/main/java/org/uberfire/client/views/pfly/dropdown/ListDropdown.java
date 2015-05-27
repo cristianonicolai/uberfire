@@ -86,6 +86,7 @@ public class ListDropdown extends DropDown {
         if( hideOnSingleElement && dropDownMenu.getWidgetCount() == 1 && anchor.getWidgetIndex( caret ) != -1 ){
             anchor.remove( caret );
             anchor.setDataToggle( null );
+            this.removeStyleName( "open" );
             toggleStyles( true );
         } else if( anchor.getWidgetIndex( caret ) == -1){
             anchor.add( caret );
