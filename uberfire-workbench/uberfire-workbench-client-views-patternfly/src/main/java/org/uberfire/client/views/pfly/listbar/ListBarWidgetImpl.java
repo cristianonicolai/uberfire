@@ -622,6 +622,12 @@ public class ListBarWidgetImpl
         final Span span = new Span();
         span.add( title );
         final Icon icon = new Icon( IconType.TIMES);
+        icon.addDomHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                panelManager.closePart(part);
+            }
+        }, ClickEvent.getType() );
         icon.addStyleName( Styles.PULL_RIGHT );
         final Anchor anchor = new Anchor();
         anchor.add( icon );
