@@ -30,6 +30,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DragStartEvent;
+import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -176,12 +178,12 @@ public class ListBarWidgetImpl
     WorkbenchPanelPresenter presenter;
 
     private WorkbenchDragAndDropManager dndManager;
+    private HandlerRegistration noDragHandler;
 
     private final Map<PartDefinition, FlowPanel> partContentView = new HashMap<PartDefinition, FlowPanel>();
     private final Map<PartDefinition, Widget> partTitle = new HashMap<PartDefinition, Widget>();
     LinkedHashSet<PartDefinition> parts = new LinkedHashSet<PartDefinition>();
 
-    boolean isMultiPart = true;
     boolean isDndEnabled = true;
     Pair<PartDefinition, FlowPanel> currentPart;
 
@@ -191,7 +193,6 @@ public class ListBarWidgetImpl
         maximizeButtonPresenter = new MaximizeToggleButtonPresenter( maximizeButton );
         titleDropDown.setHideOnSingleElement( getListbarPreferences().isHideTitleDropDownOnSingleElement() );
         setupEventHandlers();
-        setup( true, true );
 
         Layouts.setToFillParent( this );
         scheduleResize();
@@ -245,13 +246,6 @@ public class ListBarWidgetImpl
         } );
     }
 
-    @Override
-    public void setup( boolean isMultiPart,
-                       boolean isDndEnabled ) {
-        this.isMultiPart = isMultiPart;
-        this.isDndEnabled = isDndEnabled;
-    }
-
     ListbarPreferences getListbarPreferences(){
         try {
             return optionalListBarPrefs.isUnsatisfied() ? new ListbarPreferences() : optionalListBarPrefs.get();
@@ -263,6 +257,13 @@ public class ListBarWidgetImpl
     @Override
     public void enableDnd() {
         this.isDndEnabled = true;
+        setupTitleDropdownDnD();
+    }
+
+    @Override
+    public void disableDnd() {
+        this.isDndEnabled = false;
+        setupTitleDropdownDnD();
     }
 
     @Override
@@ -307,20 +308,12 @@ public class ListBarWidgetImpl
         // IMPORTANT! if you change what goes in this map, update the remove(PartDefinition) method
         partContentView.put( partDefinition, panel );
 
-        final Widget title = buildTitle( view.getPresenter().getTitle(), view.getPresenter().getTitleDecoration() );
-        partTitle.put( partDefinition, title );
-        title.ensureDebugId( DEBUG_TITLE_PREFIX + view.getPresenter().getTitle() );
-
-        if ( isDndEnabled ) {
-            dndManager.makeDraggable( view, title );
-        }
-
-        setupTitleDropdown();
+        buildTitle( partDefinition, view.getPresenter().getTitle(), view.getPresenter().getTitleDecoration() );
 
         scheduleResize();
     }
 
-    private Widget buildTitle( final String title , final IsWidget titleDecoration) {
+    private Widget buildTitleWidget( final String title , final IsWidget titleDecoration) {
         final String titleWidget = (titleDecoration instanceof Image) ? titleDecoration.toString() : "";
         final Text text = new Text( SafeHtmlUtils.htmlEscape( titleWidget + " " + title ) );
         return new DragArea( text );
@@ -330,11 +323,13 @@ public class ListBarWidgetImpl
     public void changeTitle( final PartDefinition part,
                              final String title,
                              final IsWidget titleDecoration ) {
-        final Widget _title = buildTitle( title, titleDecoration );
-        partTitle.put( part, _title );
-        if ( isDndEnabled ) {
-            dndManager.makeDraggable( partContentView.get( part ), _title );
-        }
+        buildTitle( part, title, titleDecoration );
+    }
+
+    private void buildTitle( final PartDefinition part, final String title , final IsWidget titleDecoration ){
+        final Widget titleWidget = buildTitleWidget( title, titleDecoration );
+        titleWidget.ensureDebugId( DEBUG_TITLE_PREFIX + title );
+        partTitle.put( part, titleWidget );
         setupTitleDropdown();
     }
 
@@ -375,6 +370,30 @@ public class ListBarWidgetImpl
         final Widget title = partTitle.get( currentPart.getK1() );
         titleDropDown.add( title );
         refillPartChooserList();
+        setupTitleDropdownDnD();
+    }
+
+    private void setupTitleDropdownDnD() {
+        // Prevent from dragging title element around
+        if( isDndEnabled() == false && noDragHandler == null ) {
+            noDragHandler = titleDropDown.addDomHandler( new DragStartHandler() {
+                @Override
+                public void onDragStart( DragStartEvent event ) {
+                    event.preventDefault();
+                }
+            }, DragStartEvent.getType() );
+        } else if( isDndEnabled() && noDragHandler != null ){
+            noDragHandler.removeHandler();
+            noDragHandler = null;
+        }
+
+        if( currentPart == null ){
+            return;
+        }
+        if ( isDndEnabled ) {
+            final Widget title = partTitle.get( currentPart.getK1() );
+            dndManager.makeDraggable( getCurrentPartView(), title );
+        }
     }
 
     private void setupContextMenu() {
@@ -600,7 +619,7 @@ public class ListBarWidgetImpl
      */
     private void refillPartChooserList() {
         if ( currentPart != null ) {
-            final String ctitle = ((WorkbenchPartPresenter.View) partContentView.get(currentPart.getK1()).getWidget(0)).getPresenter().getTitle();
+            final String ctitle = getCurrentPartView().getPresenter().getTitle();
             titleDropDown.add( buildTitleDropdownMenuItem( new Strong(ctitle), currentPart.getK1() ) );
 
             for (final PartDefinition part : parts) {
@@ -614,6 +633,14 @@ public class ListBarWidgetImpl
                 }, ClickEvent.getType() );
                 titleDropDown.add(selectPartEntry);
             }
+        }
+    }
+
+    private WorkbenchPartPresenter.View getCurrentPartView(){
+        if ( currentPart != null ) {
+            return (WorkbenchPartPresenter.View) partContentView.get(currentPart.getK1()).getWidget(0);
+        } else {
+            return null;
         }
     }
 
@@ -654,11 +681,6 @@ public class ListBarWidgetImpl
     @Override
     public MaximizeToggleButtonPresenter getMaximizeButton() {
         return maximizeButtonPresenter;
-    }
-
-    @Override
-    public boolean isMultiPart() {
-        return isMultiPart;
     }
 
     @Override

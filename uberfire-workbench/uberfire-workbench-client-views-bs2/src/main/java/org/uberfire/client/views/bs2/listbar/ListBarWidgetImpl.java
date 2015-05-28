@@ -186,7 +186,6 @@ public class ListBarWidgetImpl
         scheduleResize();
     }
 
-    @Override
     public void setup( boolean isMultiPart,
                        boolean isDndEnabled ) {
         this.isMultiPart = isMultiPart;
@@ -243,6 +242,11 @@ public class ListBarWidgetImpl
     @Override
     public void enableDnd() {
         this.isDndEnabled = true;
+    }
+
+    @Override
+    public void disableDnd() {
+        this.isDndEnabled = false;
     }
 
     @Override
@@ -655,7 +659,6 @@ public class ListBarWidgetImpl
         return maximizeButtonPresenter;
     }
 
-    @Override
     public boolean isMultiPart() {
         return isMultiPart;
     }

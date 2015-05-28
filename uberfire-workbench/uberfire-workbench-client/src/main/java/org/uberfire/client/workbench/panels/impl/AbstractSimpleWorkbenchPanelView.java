@@ -47,7 +47,7 @@ public abstract class AbstractSimpleWorkbenchPanelView<P extends WorkbenchPanelP
 
     private void setupListBar() {
         listBar.setDndManager( dndManager );
-        listBar.setup( false, false );
+        listBar.disableDnd();
         dndManager.unregisterDropController( this );
         addOnFocusHandler( listBar );
         addSelectionHandler( listBar );
