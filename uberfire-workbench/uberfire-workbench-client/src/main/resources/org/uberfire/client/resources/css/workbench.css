@@ -115,13 +115,19 @@
 }
 
 .uf-split-layout-panel-hdragger {
-    cursor: col-resize;
     background-color: #ddd;
 }
 
+.uf-split-layout-panel-hdragger:hover {
+    cursor: col-resize;
+}
+
 .uf-split-layout-panel-vdragger {
-    cursor: row-resize;
     background-color: #ddd;
+}
+
+.uf-split-layout-panel-vdragger:hover {
+    cursor: row-resize;
 }
 
 .uf-modal {
