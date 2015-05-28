@@ -152,7 +152,7 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
 
             mouseTracker = Document.get().createDivElement();
             mouseTracker.getStyle().setCursor( getHoverCursorStyle() );
-            mouseTracker.getStyle().setZIndex( 999999 );
+            mouseTracker.getStyle().setZIndex( Integer.MAX_VALUE );
             mouseTracker.getStyle().setPosition( Position.ABSOLUTE );
             mouseTracker.getStyle().setHeight( 50, Unit.PX );
             mouseTracker.getStyle().setWidth( 50, Unit.PX );
