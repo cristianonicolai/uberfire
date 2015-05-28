@@ -15,7 +15,7 @@ $registerPerspective({
                 panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
                 parts: [
                     {
-                        place: "TodoListScreen"
+                        place: "my_angular_js"
                     }
                 ]
             },
@@ -37,28 +37,6 @@ $registerPerspective({
                 parts: [
                     {
                         place: "welcome"
-                    }
-                ],
-                panels: [
-                    {
-                        width: 300,
-                        position: "east",
-                        panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
-                        parts: [
-                            {
-                                place: "WeatherGadget"
-                            }
-                        ]
-                    },
-                    {
-                        width: 300,
-                        position: "west",
-                        panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
-                        parts: [
-                            {
-                                place: "StockQuotesGadget"
-                            }
-                        ]
                     }
                 ]
             }
