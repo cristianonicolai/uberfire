@@ -88,6 +88,11 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
         }
 
         @Override
+        protected Style.Cursor getHoverCursorStyle() {
+            return Style.Cursor.COL_RESIZE;
+        }
+
+        @Override
         protected int getAbsolutePosition() {
             return getAbsoluteLeft();
         }
@@ -114,8 +119,9 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
     }
 
     abstract class Splitter extends Composite implements RequiresResize {
-        protected final Widget   target;
-        protected final Widget   hover;
+        protected final Widget target;
+        protected final Widget hover;
+        protected final Element mouseTracker;
 
         private int              offset;
         private boolean          mouseDown;
@@ -143,6 +149,13 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
             setUpHoverStyle( style, DEFAULT_SPLITTER_HOVER_SIZE );
             widget.add( hover );
             initWidget( widget );
+
+            mouseTracker = Document.get().createDivElement();
+            mouseTracker.getStyle().setCursor( getHoverCursorStyle() );
+            mouseTracker.getStyle().setZIndex( 999999 );
+            mouseTracker.getStyle().setPosition( Position.ABSOLUTE );
+            mouseTracker.getStyle().setHeight( 50, Unit.PX );
+            mouseTracker.getStyle().setWidth( 50, Unit.PX );
         }
 
         @Override
@@ -168,6 +181,8 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
                     offset = getEventPosition( event ) - getAbsolutePosition();
                     Event.setCapture( getElement() );
                     event.preventDefault();
+
+                    Document.get().getBody().appendChild( mouseTracker );
                     break;
 
                 case Event.ONMOUSEUP :
@@ -177,6 +192,8 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
 
                     Event.releaseCapture( getElement() );
                     event.preventDefault();
+
+                    mouseTracker.removeFromParent();
                     break;
 
                 case Event.ONMOUSEMOVE :
@@ -190,6 +207,9 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
                         }
                         setAssociatedWidgetSize( size );
                         event.preventDefault();
+
+                        mouseTracker.getStyle().setLeft( event.getClientX() - mouseTracker.getOffsetWidth() / 2, Unit.PX );
+                        mouseTracker.getStyle().setTop( event.getClientY() - mouseTracker.getOffsetHeight() / 2, Unit.PX );
                     }
                     break;
             }
@@ -205,6 +225,8 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
         }
 
         protected abstract void setUpHoverStyle(Style style, int size);
+
+        protected abstract Style.Cursor getHoverCursorStyle();
 
         protected abstract int getAbsolutePosition();
 
@@ -287,6 +309,11 @@ public class WorkbenchSplitLayoutPanel extends DockLayoutPanel {
         @Override
         public void onResize() {
             hover.getElement().getStyle().setWidth( target.getOffsetWidth(), Unit.PX );
+        }
+
+        @Override
+        protected Style.Cursor getHoverCursorStyle() {
+            return Style.Cursor.ROW_RESIZE;
         }
 
         @Override
