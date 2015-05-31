@@ -15,6 +15,18 @@
  */
 package org.uberfire.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -46,13 +58,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import java.util.*;
-
-import static org.uberfire.workbench.model.menu.MenuFactory.newTopLevelMenu;
+import static org.uberfire.workbench.model.menu.MenuFactory.*;
 
 /**
  * GWT's Entry-point for Uberfire-showcase
@@ -116,16 +122,7 @@ public class ShowcaseEntryPoint {
                 .endMenu()
                 .newTopLevelCustomMenu(manager.lookupBean(CustomSplashHelp.class).getInstance())
                 .endMenu()
-//                .newTopLevelMenu("Logout 1")
-//                .position(MenuPosition.RIGHT)
-//                .respondsWith( new Command() {
-//                    @Override
-//                    public void execute() {
-//                        logout();
-//                    }
-//                } )
-//                .endMenu()
-                 .newTopLevelCustomMenu(
+                .newTopLevelCustomMenu(
                          UtilityMenuBuilder.newUtilityMenu("Status")
                                  .respondsWith(new Command() {
                                      @Override
@@ -255,10 +252,6 @@ public class ShowcaseEntryPoint {
             }
         }.run( 500 );
     }
-
-//    public static native void redirect( String url )/*-{
-//        $wnd.location = url;
-//    }-*/;
 
     @Produces @ApplicationScoped
     public MainBrand createBrand(){
