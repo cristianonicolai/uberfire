@@ -9,12 +9,14 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
+import org.uberfire.backend.vfs.impl.EditorLockInfo;
 import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.backend.vfs.impl.LockResult;
+import org.uberfire.client.resources.i18n.WorkbenchConstants;
 import org.uberfire.client.workbench.VFSLockServiceProxy;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.client.workbench.widgets.popup.EditorLockPopup;
 import org.uberfire.mvp.ParameterizedCommand;
+import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.events.ResourceAddedEvent;
 import org.uberfire.workbench.events.ResourceUpdatedEvent;
 
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * Default implementation of {@link EditorLockManager} using the
@@ -50,7 +53,10 @@ public class EditorLockManagerImpl implements EditorLockManager {
     private javax.enterprise.event.Event<ChangeTitleWidgetEvent> changeTitleEvent;
 
     @Inject
-    private EditorLockPopup lockPopup;
+    private javax.enterprise.event.Event<EditorLockInfo> editorLockInfoEvent;
+
+    @Inject
+    private javax.enterprise.event.Event<NotificationEvent> lockNotification;
 
     @Inject
     private User user;
@@ -86,6 +92,12 @@ public class EditorLockManagerImpl implements EditorLockManager {
     }
 
     @Override
+    public void onFocus() {
+        publishJsApi();
+        fireEditorLockEvent();
+    }
+    
+    @Override
     public void acquireLockOnDemand() {
         final Element element = activity.getWidget().asWidget().getElement();
         Event.sinkEvents( element,
@@ -96,35 +108,39 @@ public class EditorLockManagerImpl implements EditorLockManager {
             @Override
             public void onBrowserEvent( Event event ) {
                 if ( isLockRequired( event ) ) {
-                    if ( lockInfo.isLocked() ) {
-                        handleLockFailure();
-                    }
-                    else if ( !lockRequestPending ) {
-                        lockRequestPending = true;
-                        final ParameterizedCommand<LockResult> command = new ParameterizedCommand<LockResult>() {
-
-                            @Override
-                            public void execute( final LockResult result ) {
-                                updateLockInfo( result.getLockInfo() );
-
-                                if ( result.isSuccess() ) {
-                                    releaseLockOnClose();
-                                }
-                                else {
-                                    handleLockFailure();
-                                }
-                                lockRequestPending = false;
-                            }
-                        };
-                        lockService.acquireLock( activity.getPath(),
-                                                 command );
-                    }
+                    acquireLock();
                 }
             }
         };
 
         Event.setEventListener( element,
                                 lockDemandListener );
+    }
+
+    private void acquireLock() {
+        if ( lockInfo.isLocked() ) {
+            handleLockFailure();
+        } 
+        else if ( !lockRequestPending ) {
+            lockRequestPending = true;
+            final ParameterizedCommand<LockResult> command = new ParameterizedCommand<LockResult>() {
+
+                @Override
+                public void execute( final LockResult result ) {
+                    updateLockInfo( result.getLockInfo() );
+
+                    if ( result.isSuccess() ) {
+                        releaseLockOnClose();
+                    } 
+                    else {
+                        handleLockFailure();
+                    }
+                    lockRequestPending = false;
+                }
+            };
+            lockService.acquireLock( activity.getPath(),
+                                     command );
+        }
     }
 
     @Override
@@ -144,9 +160,46 @@ public class EditorLockManagerImpl implements EditorLockManager {
         }
     }
 
+    private void releaseLockInternal() {
+        if ( isLockedByCurrentUser() && !unlockRequestPending ) {
+            unlockRequestPending = true;
+
+            ParameterizedCommand<LockResult> command = new ParameterizedCommand<LockResult>() {
+
+                @Override
+                public void execute( final LockResult result ) {
+                    updateLockInfo( result.getLockInfo() );
+
+                    if ( result.isSuccess() ) {
+                        if ( closeHandler != null ) {
+                            closeHandler.removeHandler();
+                        }
+                    }
+
+                    unlockRequestPending = false;
+                }
+            };
+            lockService.releaseLock( activity.getPath(),
+                                     command );
+        }
+    }
+
+    private void releaseLockOnClose() {
+        closeHandler = Window.addCloseHandler( new CloseHandler<Window>() {
+
+            @Override
+            public void onClose( CloseEvent<Window> event ) {
+                releaseLock();
+            }
+        } );
+    }
+
     private void handleLockFailure() {
-        lockPopup.show( activity.getWidget().asWidget().getElement(),
-                        lockInfo.lockedBy() );
+        lockNotification.fire( new NotificationEvent( WorkbenchConstants.INSTANCE.lockedMessage( lockInfo.lockedBy() ),
+                                                      NotificationEvent.NotificationType.INFO,
+                                                      true,
+                                                      activity.getPlace(),
+                                                      20) );
 
         // Delay reloading slightly in case we're dealing with a flood of events
         if ( reloadTimer == null ) {
@@ -179,15 +232,16 @@ public class EditorLockManagerImpl implements EditorLockManager {
             return Boolean.parseBoolean( lockAttribute );
         }
 
-        boolean eventExcluded = (event.getTypeInt() == Event.ONCLICK &&
-                TAG_CLICK_LOCK_EXCLUSIONS.contains( target.getTagName().toLowerCase() ));
+        boolean eventExcluded = ( event.getTypeInt() == Event.ONCLICK &&
+                TAG_CLICK_LOCK_EXCLUSIONS.contains( target.getTagName().toLowerCase() ) );
 
         return !eventExcluded;
     }
 
     private String findLockAttribute( final Element element ) {
-        if ( element == null )
+        if ( element == null ) {
             return null;
+        }
 
         final String lockAttribute = element.getAttribute( "data-uf-lock" );
         if ( lockAttribute != null && !lockAttribute.isEmpty() ) {
@@ -201,11 +255,14 @@ public class EditorLockManagerImpl implements EditorLockManager {
         if ( lockInfo.getFile().equals( activity.getPath() ) ) {
             this.lockInfo = lockInfo;
             this.lockSyncComplete = true;
-            
+
             if ( activity.isOpen() ) {
                 changeTitleEvent.fire( LockTitleWidgetEvent.create( activity,
                                                                     lockInfo ) );
             }
+            
+            fireEditorLockEvent();
+
             for ( Runnable runnable : syncCompleteRunnables ) {
                 runnable.run();
             }
@@ -213,53 +270,48 @@ public class EditorLockManagerImpl implements EditorLockManager {
         }
     }
 
-    private void releaseLockOnClose() {
-        closeHandler = Window.addCloseHandler( new CloseHandler<Window>() {
-
-            @Override
-            public void onClose( CloseEvent<Window> event ) {
-                releaseLock();
-            }
-        } );
-    }
-
-    private void releaseLockInternal() {
-        if ( isLockedByCurrentUser() && !unlockRequestPending ) {
-            unlockRequestPending = true;
-
-            ParameterizedCommand<LockResult> command = new ParameterizedCommand<LockResult>() {
-
-                @Override
-                public void execute( final LockResult result ) {
-                    updateLockInfo( result.getLockInfo() );
-
-                    if ( result.isSuccess() ) {
-                        if ( closeHandler != null ) {
-                            closeHandler.removeHandler();
-                        }
-                    }
-
-                    unlockRequestPending = false;
-                }
-            };
-            lockService.releaseLock( activity.getPath(),
-                                     command );
-        }
-    }
-
-    @SuppressWarnings("unused")
     private void onResourceAdded( @Observes ResourceAddedEvent res ) {
         if ( activity != null && res.getPath().equals( activity.getPath() ) ) {
             releaseLock();
         }
     }
 
-    @SuppressWarnings("unused")
     private void onResourceUpdated( @Observes ResourceUpdatedEvent res ) {
         if ( activity != null && res.getPath().equals( activity.getPath() ) ) {
             activity.onStartup( activity.getPath(),
                                 activity.getPlace() );
             releaseLock();
+        }
+    }
+
+    private native void publishJsApi()/*-{
+        var lockManager = this;
+        $wnd.isLocked = function () {
+            return lockManager.@org.uberfire.client.mvp.EditorLockManagerImpl::isLocked()();
+        }
+        $wnd.isLockedByCurrentUser = function () {
+            return lockManager.@org.uberfire.client.mvp.EditorLockManagerImpl::isLockedByCurrentUser()();
+        }
+        $wnd.acquireLock = function () {
+            lockManager.@org.uberfire.client.mvp.EditorLockManagerImpl::acquireLock()();
+        }
+        $wnd.releaseLock = function () {
+            lockManager.@org.uberfire.client.mvp.EditorLockManagerImpl::releaseLock()();
+        }
+    }-*/;
+
+    private boolean isLocked() {
+        return lockInfo.isLocked();
+    }
+    
+    private void fireEditorLockEvent() {
+        Element element = activity.getWidget().asWidget().getElement();
+        boolean visible = UIObject.isVisible( element ) && 
+                (element.getAbsoluteLeft() > 0) && (element.getAbsoluteTop() > 0);
+        
+        if ( visible ) {
+            editorLockInfoEvent.fire( new EditorLockInfo( lockInfo.isLocked(),
+                                                          isLockedByCurrentUser() ) );
         }
     }
 }

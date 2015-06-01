@@ -15,16 +15,25 @@
  */
 package org.uberfire.client.workbench.widgets.notifications;
 
-import static org.uberfire.commons.validation.PortablePreconditions.*;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.uberfire.workbench.events.NotificationEvent;
-import org.uberfire.workbench.events.NotificationEvent.NotificationType;
-
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.uberfire.client.mvp.Activity;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.WorkbenchActivity;
+import org.uberfire.client.workbench.events.ClosePlaceEvent;
+import org.uberfire.commons.validation.PortablePreconditions;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
 
 /**
  * Observes all notification events, and coordinates their display and removal.
@@ -32,7 +41,11 @@ import com.google.gwt.user.client.Command;
 @ApplicationScoped
 public class NotificationManager {
 
-    private final View view;
+    private final SyncBeanManager iocManager;
+    private final Map<PlaceRequest, View> notificationsContainerViewMap = new HashMap<PlaceRequest, View>();
+
+    private final PlaceManager placeManager;
+    private final PlaceRequest rootPlaceRequest = new DefaultPlaceRequest( "org.uberfire.client.workbench.widgets.notifications.root" );
 
     public interface NotificationPopupHandle {
 
@@ -44,23 +57,40 @@ public class NotificationManager {
     public interface View {
 
         /**
+         * Set the container relative to which Notifications are to be shown. This should be called before
+         * either {@link #show(NotificationEvent, Command)} or {@link #hide(NotificationPopupHandle)}
+         * and must be passed a non-null value.
+         *
+         * @param container
+         *          The container relative to which Notifications will be shown. Must not be null.
+         */
+        void setContainer( final IsWidget container );
+        
+        /**
+         * Configures the initial vertical spacing for the first notifications
+         * (see {@link NotificationEvent#getInitialTopOffset()}). A default value is
+         * used if this method is never invoked.
+         * 
+         * @param spacing
+         *            the vertical spacing in number of pixels
+         */
+        void setInitialSpacing (int spacing);
+
+        /**
          * Displays a notification with the given severity and contents.
          *
-         * @param type
-         *            The notification type. Must not be null.
-         * @param message
-         *            The message to display. Must not be null.
+         * @param event
+         *          The notification event. Must not be null.
          * @param hideCommand
-         *            The command that must be called when the notification is to be closed. When this command is
-         *            invoked, the notification manager will change the notification status from active to acknowledged,
-         *            and it will invoke the {@link #hide(NotificationPopupHandle)} method with the notification handle
-         *            that this method call returned.
+         *          The command that must be called when the notification is to be closed. When this command is
+         *          invoked, the notification manager will change the notification status from active to acknowledged,
+         *          and it will invoke the {@link #hide(NotificationPopupHandle)} method with the notification handle
+         *          that this method call returned.
          * @return The object to pass to {@link #hide(NotificationPopupHandle)} that will hide this notification. Must
-         *         not return null.
+         * not return null.
          */
-        NotificationPopupHandle show( NotificationType type,
-                                      String message,
-                                      Command hideCommand );
+        NotificationPopupHandle show( final NotificationEvent event,
+                                      final Command hideCommand );
 
         /**
          * Hides the active notification identified by the given popup handle. This call is made when a notification
@@ -69,26 +99,44 @@ public class NotificationManager {
          * email, this call would mark it as read.
          *
          * @param popup
-         *            the handle for the active notification that should be hidden.
+         *          The handle for the active notification that should be hidden.
          */
-        void hide( NotificationPopupHandle popup );
+        void hide( final NotificationPopupHandle popup );
+
+        /**
+         * Checks whether the given event is currently being shown.
+         *
+         * @param event
+         *          The notification event. Must not be null.
+         * @return true if shown
+         */
+        boolean isShowing( final NotificationEvent event );
     }
 
     @Inject
-    public NotificationManager(View view) {
-        this.view = checkNotNull( "view", view );
+    public NotificationManager( final SyncBeanManager iocManager,
+                                final PlaceManager placeManager ) {
+        this.iocManager = PortablePreconditions.checkNotNull( "iocManager",
+                                                              iocManager );
+        this.placeManager = PortablePreconditions.checkNotNull( "placeManager",
+                                                                placeManager );
     }
 
     private class HideNotificationCommand implements Command {
 
         private NotificationPopupHandle handle;
+        private final View notificationContainerView;
+
+        HideNotificationCommand( final View notificationContainerView ) {
+            this.notificationContainerView = PortablePreconditions.checkNotNull( "notificationContainerView", notificationContainerView );
+        }
 
         @Override
         public void execute() {
             if ( handle == null ) {
                 throw new IllegalStateException( "The show() method hasn't returned a handle yet!" );
             }
-            view.hide( handle );
+            notificationContainerView.hide( handle );
         }
 
         void setHandle( NotificationPopupHandle handle ) {
@@ -102,14 +150,55 @@ public class NotificationManager {
      * firing a CDI {@link NotificationEvent}.
      *
      * @param event
-     *            the notification to display and store in the notification system.
+     *          The notification to display and store in the notification system.
      */
     public void addNotification( @Observes final NotificationEvent event ) {
-        HideNotificationCommand hideCommand = new HideNotificationCommand();
-        NotificationPopupHandle handle = view.show( event.getType(),
-                                                    event.getNotification(),
-                                                    hideCommand );
-        hideCommand.setHandle( handle );
+        //If an explicit container has not been specified use the RootPanel
+        PlaceRequest placeRequest = event.getPlaceRequest();
+        IsWidget notificationsContainer = RootPanel.get();
+        if ( placeRequest == null ) {
+            placeRequest = rootPlaceRequest;
+        } else {
+            final Activity activity = placeManager.getActivity( placeRequest );
+            if ( activity instanceof WorkbenchActivity ) {
+                notificationsContainer = ( (WorkbenchActivity) activity ).getWidget();
+            }
+        }
+
+        //Lookup, or create, a View specific to the container
+        View notificationsContainerView = notificationsContainerViewMap.get( placeRequest );
+        if ( notificationsContainerView == null ) {
+            final IOCBeanDef<View> containerViewBeanDef = iocManager.lookupBean( View.class );
+            if ( containerViewBeanDef != null ) {
+                notificationsContainerView = containerViewBeanDef.getInstance();
+                notificationsContainerView.setContainer( notificationsContainer );
+                if (event.getInitialTopOffset() != null) {
+                    notificationsContainerView.setInitialSpacing( event.getInitialTopOffset() );
+                }
+                notificationsContainerViewMap.put( placeRequest,
+                                                   notificationsContainerView );
+            }
+        }
+        if ( notificationsContainerView == null ) {
+            return;
+        }
+
+        //Show notification in the container
+        if ( !event.isSingleton() || !notificationsContainerView.isShowing( event ) ) {
+            HideNotificationCommand hideCommand = new HideNotificationCommand( notificationsContainerView );
+            NotificationPopupHandle handle = notificationsContainerView.show( event,
+                                                                              hideCommand );
+            hideCommand.setHandle( handle );
+        }
+    }
+
+    //Clean-up container map when an Activity closes; in the absence of a WeakHashMap in JavaScript
+    public void onClosePlaceEvent( @Observes final ClosePlaceEvent event ) {
+        final PlaceRequest placeRequest = event.getPlace();
+        if ( placeRequest == null ) {
+            return;
+        }
+        notificationsContainerViewMap.remove( placeRequest );
     }
 
 }

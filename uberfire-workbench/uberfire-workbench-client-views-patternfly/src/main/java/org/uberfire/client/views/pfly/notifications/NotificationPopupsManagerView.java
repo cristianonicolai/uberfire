@@ -2,47 +2,70 @@ package org.uberfire.client.views.pfly.notifications;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.Dependent;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.workbench.widgets.animations.LinearFadeOutAnimation;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager.NotificationPopupHandle;
 import org.uberfire.commons.validation.PortablePreconditions;
-import org.uberfire.workbench.events.NotificationEvent.NotificationType;
+import org.uberfire.workbench.events.NotificationEvent;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
-
-
+@Dependent
 public class NotificationPopupsManagerView implements NotificationManager.View {
 
     //When true we are in the process of removing a notification message
     private boolean removing = false;
 
     private final int SPACING = 48;
+    private int initialSpacing = SPACING;
+
+    private IsWidget container;
 
     private final List<PopupHandle> activeNotifications = new ArrayList<PopupHandle>();
 
     private final List<PopupHandle> pendingRemovals = new ArrayList<PopupHandle>();
 
     private static class PopupHandle implements NotificationPopupHandle {
-        final NotificationPopupView view;
 
-        PopupHandle( NotificationPopupView view ) {
+        final NotificationPopupView view;
+        final NotificationEvent event;
+
+        PopupHandle( NotificationPopupView view,
+                     NotificationEvent event ) {
             this.view = PortablePreconditions.checkNotNull( "view", view );
+            this.event = PortablePreconditions.checkNotNull( "event", event );
         }
     }
 
     @Override
-    public NotificationPopupHandle show( NotificationType type,
-                                         String message,
+    public void setContainer( final IsWidget container ) {
+        this.container = PortablePreconditions.checkNotNull( "container", container );
+    }
+
+    @Override
+    public void setInitialSpacing( int spacing ) {
+        this.initialSpacing = spacing;
+    }
+    
+    @Override
+    public NotificationPopupHandle show( NotificationEvent event,
                                          Command hideCommand ) {
+        if ( container == null ) {
+            throw new IllegalStateException( "The setContainer() method hasn't been called!" );
+        }
+
         final NotificationPopupView view = new NotificationPopupView();
-        final PopupHandle popupHandle = new PopupHandle( view );
+        final PopupHandle popupHandle = new PopupHandle( view,
+                                                         event );
         activeNotifications.add( popupHandle );
-        view.setPopupPosition( getMargin(),
-                               activeNotifications.size() * SPACING );
-        view.setNotification( message );
-        view.setType( type );
+        int size = activeNotifications.size();
+        int topMargin = (size == 1) ? initialSpacing : (size * SPACING) - (SPACING - initialSpacing);
+        view.setPopupPosition( container.asWidget().getAbsoluteLeft() + getMargin(),
+                               container.asWidget().getAbsoluteTop() + topMargin );
+        view.setNotification( event.getNotification() );
+        view.setType( event.getType() );
         view.setNotificationWidth( getWidth() + "px" );
         view.show( hideCommand );
         return popupHandle;
@@ -50,16 +73,20 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
 
     @Override
     public void hide( final NotificationPopupHandle handle ) {
+        if ( container == null ) {
+            throw new IllegalStateException( "The setContainer() method hasn't been called!" );
+        }
+
         final int removingIndex = activeNotifications.indexOf( handle );
         if ( removingIndex == -1 ) {
             return;
         }
         if ( removing ) {
-            pendingRemovals.add((PopupHandle) handle);
+            pendingRemovals.add( (PopupHandle) handle );
             return;
         }
         removing = true;
-        final NotificationPopupView view = ((PopupHandle) handle).view;
+        final NotificationPopupView view = ( (PopupHandle) handle ).view;
         final LinearFadeOutAnimation fadeOutAnimation = new LinearFadeOutAnimation( view ) {
             @Override
             public void onUpdate( double progress ) {
@@ -67,7 +94,8 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
                 for ( int i = removingIndex; i < activeNotifications.size(); i++ ) {
                     NotificationPopupView v = activeNotifications.get( i ).view;
                     final int left = v.getPopupLeft();
-                    final int top = (int) ( ( ( i + 1 ) * SPACING ) - ( progress * SPACING ) );
+                    final int top = (int) ( ( ( i + 1 ) * SPACING ) - ( progress * SPACING ) ) 
+                            - (SPACING - initialSpacing) + container.asWidget().getAbsoluteTop();
                     v.setPopupPosition( left,
                                         top );
                 }
@@ -89,14 +117,24 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
         fadeOutAnimation.run( 500 );
     }
 
-    //80% of screen width
-    private int getWidth() {
-        return (int) ( Window.getClientWidth() * 0.8 );
+    @Override
+    public boolean isShowing( NotificationEvent event ) {
+        for ( PopupHandle handle : activeNotifications ) {
+            if ( handle.event.equals( event ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    //10% of screen width
+    //80% of container width
+    private int getWidth() {
+        return (int) ( container.asWidget().getElement().getClientWidth() * 0.8 );
+    }
+
+    //10% of container width
     private int getMargin() {
-        return ( Window.getClientWidth() - getWidth() ) / 2;
+        return ( container.asWidget().getElement().getClientWidth() - getWidth() ) / 2;
     }
 
 }
