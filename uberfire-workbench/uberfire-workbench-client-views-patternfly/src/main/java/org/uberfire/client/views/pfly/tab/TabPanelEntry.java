@@ -129,7 +129,7 @@ public class TabPanelEntry implements HasActive {
      * Makes this tab show itself and become the active tab, replacing whatever tab was previously active.
      */
     public void showTab() {
-        tab.showTab();
+        tab.showTab( false );
     }
 
     @Override
