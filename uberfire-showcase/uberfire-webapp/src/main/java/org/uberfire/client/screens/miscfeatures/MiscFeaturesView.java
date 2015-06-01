@@ -79,7 +79,6 @@ MiscFeaturesPresenter.View {
     @PostConstruct
     public void init() {
         initWidget( uiBinder.createAndBindUi( this ) );
-        GWT.log("init");
     }
 
     @UiHandler("notificationDefaultButton")
