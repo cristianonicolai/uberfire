@@ -23,7 +23,9 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -37,7 +39,7 @@ import org.uberfire.workbench.model.Position;
 /**
  * Created by Cristiano Nicolai.
  */
-public abstract class AbstractMarkdownScreen {
+public abstract class AbstractMarkdownScreen extends Composite implements RequiresResize {
 
     protected static final String EMPTY = "<p>-- empty --</p>";
 
@@ -69,11 +71,12 @@ public abstract class AbstractMarkdownScreen {
             }
         }).get(getMarkdownFileURI());
         markdown.getElement().getStyle().setPadding( 15, Style.Unit.PX );
+        initWidget( markdown );
     }
 
     @WorkbenchPartView
     public Widget getView() {
-        return markdown;
+        return this;
     }
 
     @DefaultPosition
@@ -90,4 +93,11 @@ public abstract class AbstractMarkdownScreen {
     public static native String parseMarkdown(String content)/*-{
         return $wnd.marked(content);
     }-*/;
+
+    @Override
+    public void onResize() {
+        int height = getParent().getOffsetHeight();
+        int width = getParent().getOffsetWidth();
+        setPixelSize( width, height );
+    }
 }
