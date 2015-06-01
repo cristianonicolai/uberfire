@@ -12,7 +12,6 @@ import static org.mockito.Mockito.*;
 
 public class CompassDropControllerUnitTestWrapper extends CompassDropController {
 
-    CompassWidget mock;
     WorkbenchDragContext workDragContextMock;
     PanelDefinition positionMock;
 
@@ -22,7 +21,7 @@ public class CompassDropControllerUnitTestWrapper extends CompassDropController 
         workDragContextMock = mock( WorkbenchDragContext.class );
 
         when( dndManager.getWorkbenchContext() ).thenReturn( workDragContextMock );
-        mock = mock( CompassWidget.class );
+        this.compass = mock( CompassWidget.class );
     }
 
     @Override
@@ -31,11 +30,11 @@ public class CompassDropControllerUnitTestWrapper extends CompassDropController 
     }
 
     public void mockDropTargetPositionNone() {
-        when( mock.getDropPosition() ).thenReturn( CompassPosition.NONE );
+        when( this.compass.getDropPosition() ).thenReturn( CompassPosition.NONE );
     }
 
     public void mockDropTargetPosition(Position position) {
-        when( mock.getDropPosition() ).thenReturn( position);
+        when( this.compass.getDropPosition() ).thenReturn( position);
     }
 
     public void mockSamePositionDrag( WorkbenchPanelView dropTarget ) {

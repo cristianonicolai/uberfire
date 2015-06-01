@@ -44,7 +44,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class CompassDropController implements DropController {
 
     @Inject
-    private CompassWidget compass;
+    CompassWidget compass;
 
     WorkbenchPanelView<?> dropTarget;
 
