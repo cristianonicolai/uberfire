@@ -89,7 +89,9 @@ public class TabPanelWithDropdownsTest extends AbstractErraiCDITest {
 
         // this test leaves it intentionally ambiguous if the show[n] events come from adding the tab or from showing it later
         TabPanelEntry item1 = tabPanel.addItem( "First Tab", new Label( "First tab's content" ) );
+        assertNull( tabPanel.getActiveTab() );
         item1.showTab();
+        assertNotNull( tabPanel.getActiveTab() );
 
         assertEquals( 1, showHandler.getEventCount() );
         assertEquals( 1, shownHandler.getEventCount() );
