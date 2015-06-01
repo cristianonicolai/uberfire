@@ -7,10 +7,13 @@
 
   <source path="pfly"/>
 
-  <public path="pfly/bower_components">
+  <public path="pfly/bower_components" >
     <include name="patternfly/**"/>
+  </public>
+  <public path="">
+    <include name="uberfire-patternfly.css"/>
   </public>
 
   <stylesheet src="patternfly/dist/css/patternfly.min.css"/>
-
+  <stylesheet src="uberfire-patternfly.css" />
 </module>
