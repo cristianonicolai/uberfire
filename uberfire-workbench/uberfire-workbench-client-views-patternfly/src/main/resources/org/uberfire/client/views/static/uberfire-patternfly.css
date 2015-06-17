@@ -187,6 +187,21 @@
     padding-top: 0px;
 }
 
+.navbar .divider-vertical {
+    margin: 0 9px;
+    border-right: 1px solid #cfcfcf;
+    vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+    .navbar .divider-vertical {
+        display: none;
+    }
+}
+
+.navbar-primary .uf-menu-compact {
+
+}
 /* Fix for modal behind backdrop. Potentially fixed by the next BS release.
    Broken in 3.3.4
    See https://github.com/twbs/bootstrap/issues/16148
