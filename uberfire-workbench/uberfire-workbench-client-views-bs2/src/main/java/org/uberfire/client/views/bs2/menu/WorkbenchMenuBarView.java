@@ -193,4 +193,18 @@ public class WorkbenchMenuBarView extends Composite
         menuBarRight.clear();
     }
 
+    @Override
+    public void expand() {
+
+    }
+
+    @Override
+    public void collapse() {
+
+    }
+
+    @Override
+    public void selectMenu( MenuItem menu ) {
+
+    }
 }

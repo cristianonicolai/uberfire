@@ -17,12 +17,11 @@ package org.uberfire.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.google.gwt.user.client.Window;
+import org.uberfire.client.ShowcaseEntryPoint;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter;
-import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -45,25 +44,8 @@ public class SimplePerspective {
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu( "Create New" )
-                .menus()
-                .menu( "Command 1" )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        Window.alert( "Command 1!" );
-                    }
-                } )
-                .endMenu()
-                .menu( "Command 2" )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        Window.alert( "Command 2!" );
-                    }
-                } )
-                .endMenu()
-                .endMenus()
+                .newTopLevelMenu( "Open" )
+                        .withItems( ShowcaseEntryPoint.getScreens() )
                 .endMenu()
                 .build();
     }

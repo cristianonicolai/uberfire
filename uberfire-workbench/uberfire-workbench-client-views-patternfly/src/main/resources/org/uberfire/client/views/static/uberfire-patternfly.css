@@ -187,21 +187,57 @@
     padding-top: 0px;
 }
 
-.navbar .divider-vertical {
-    margin: 0 9px;
-    border-right: 1px solid #cfcfcf;
-    vertical-align: middle;
+.uf-navbar-nav-compact,
+.uf-navbar-compact .navbar-primary {
+    display: none;
+}
+
+.uf-navbar-compact .uf-navbar-nav-compact {
+    display: block;
+}
+
+.uf-navbar-compact .uf-navbar-nav-compact > li:first-child {
+    border-left: 1px solid #2b2b2b;
+}
+
+.uf-navbar-compact .navbar-header {
+    float: left;
+}
+
+.uf-navbar-compact .uf-navbar-nav-compact > li > a {
+    padding: 7px 10px 7px 10px;
+}
+
+.uf-navbar-compact .uf-navbar-nav-compact > li > a:hover {
+    background-color: #1d1d1d;
+    border-top-color: #5c5c5c;
+    color: #cfcfcf;
+    background-image: -webkit-linear-gradient(top, #363636 0%, #1d1d1d 100%);
+    background-image: -o-linear-gradient(top, #363636 0%, #1d1d1d 100%);
+    background-image: linear-gradient(to bottom, #363636 0%, #1d1d1d 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff363636', endColorstr='#ff1d1d1d', GradientType=0);
+}
+
+.navbar-pf .navbar-brand {
+    margin-right: 10px;
+}
+
+.navbar-pf .navbar-brand img {
+    height: 10px;
+}
+
+.navbar-pf .navbar-utility {
+    top: 1px;
 }
 
 @media (max-width: 767px) {
-    .navbar .divider-vertical {
-        display: none;
+    .navbar-pf .navbar-header {
+        float: none;
     }
-}
-
-.navbar-primary .uf-menu-compact {
 
 }
+
 /* Fix for modal behind backdrop. Potentially fixed by the next BS release.
    Broken in 3.3.4
    See https://github.com/twbs/bootstrap/issues/16148

@@ -15,13 +15,23 @@
  */
 package org.uberfire.client.workbench.widgets.menu;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.MenuItemPerspective;
 import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.workbench.model.menu.impl.BaseMenuVisitor;
 
 /**
  * Presenter for WorkbenchMenuBar that mediates changes to the Workbench MenuBar
@@ -40,9 +50,15 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
         void clear();
 
         void addMenuItems( Menus menus );
+
+        void selectMenu( MenuItem menu );
+
+        void expand();
+
+        void collapse();
     }
 
-    private PlaceRequest activePlace;
+    private final Map<String, MenuItemPerspective> perspectiveMenus = new HashMap<String, MenuItemPerspective>();
 
     @Inject
     private View view;
@@ -58,12 +74,35 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
     public void addMenus( final Menus menus ) {
         if ( menus != null && !menus.getItems().isEmpty() ) {
             view.addMenuItems( menus );
+            menus.accept( new BaseMenuVisitor() {
+                @Override
+                public void visit( final MenuItemPerspective menuItemPerspective ) {
+                    perspectiveMenus.put( menuItemPerspective.getIdentifier(), menuItemPerspective );
+                }
+            } );
+        }
+    }
+
+    protected void onPerspectiveChange( @Observes PerspectiveChange perspectiveChange ) {
+        final MenuItemPerspective mip = perspectiveMenus.get( perspectiveChange.getIdentifier() );
+        if( mip != null) {
+            view.selectMenu( mip );
         }
     }
 
     @Override
     public void clear() {
+        perspectiveMenus.clear();
         view.clear();
     }
 
+    @Override
+    public void expand() {
+        view.expand();
+    }
+
+    @Override
+    public void collapse() {
+        view.collapse();
+    }
 }

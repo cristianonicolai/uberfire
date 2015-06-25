@@ -27,6 +27,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
+import com.google.common.collect.Sets;
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -40,6 +41,8 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.security.shared.api.Role;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.client.menu.CustomSplashHelp;
 import org.uberfire.client.mvp.ActivityManager;
@@ -49,9 +52,9 @@ import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.resources.AppResource;
 import org.uberfire.client.screen.JSWorkbenchScreenActivity;
 import org.uberfire.client.views.pfly.menu.MainBrand;
-import org.uberfire.client.views.pfly.menu.UserMenuBuilder;
-import org.uberfire.client.views.pfly.menu.UtilityMenuBuilder;
+import org.uberfire.client.views.pfly.menu.UserMenu;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
+import org.uberfire.client.workbench.widgets.menu.UtilityMenuBar;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -74,6 +77,15 @@ public class ShowcaseEntryPoint {
     private WorkbenchMenuBar menubar;
 
     @Inject
+    private UserMenu userMenu;
+
+    @Inject
+    private User user;
+
+    @Inject
+    private UtilityMenuBar utilityMenu;
+
+    @Inject
     private PlaceManager placeManager;
 
     @Inject
@@ -82,17 +94,17 @@ public class ShowcaseEntryPoint {
     @Inject
     private Caller<AuthenticationService> authService;
 
-    private final List<String> menuItemsToRemove = new ArrayList<String>() {{
-        add( "IFrameScreen" );
-        add( "IPInfoGadget" );
-        add( "SportsNewsGadget" );
-        add( "StockQuotesGadget" );
-        add( "WeatherGadget" );
-        add( "YouTubeScreen" );
-        add( "YouTubeVideos" );
-        add( "chartPopulator" );
-        add( "welcome" );
-    }};
+    private static final Set<String> menuItemsToRemove = Sets.newHashSet(
+            "IFrameScreen",
+            "IPInfoGadget",
+            "SportsNewsGadget",
+            "StockQuotesGadget",
+            "WeatherGadget",
+            "YouTubeScreen",
+            "YouTubeVideos",
+            "chartPopulator",
+            "welcome"
+    );
 
     @AfterInitialization
     public void startApp() {
@@ -104,16 +116,7 @@ public class ShowcaseEntryPoint {
 
         final Menus menus =
                 newTopLevelMenu( "Home" )
-                        .respondsWith( new Command() {
-                            @Override
-                            public void execute() {
-                                if ( defaultPerspective != null ) {
-                                    placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                                } else {
-                                    Window.alert( "Default perspective not found." );
-                                }
-                            }
-                        } )
+                        .perspective( defaultPerspective.getIdentifier() )
                         .endMenu()
                         .newTopLevelMenu( "Perspectives" )
                         .withItems( getPerspectives() )
@@ -121,25 +124,40 @@ public class ShowcaseEntryPoint {
                         .newTopLevelMenu( "Screens" )
                         .withItems( getScreens() )
                         .endMenu()
-                        .newTopLevelCustomMenu( manager.lookupBean( CustomSplashHelp.class ).getInstance() )
-                        .endMenu()
-                        .newTopLevelCustomMenu(
-                                UtilityMenuBuilder.newUtilityMenu( "Status" )
-                                        .respondsWith( new Command() {
-                                            @Override
-                                            public void execute() {
-                                                Window.alert( "Hello from status!" );
-                                            }
-                                        } ) )
-                        .endMenu()
-                        .newTopLevelCustomMenu( UserMenuBuilder.withUserMenu() )
-                        .endMenu()
                         .build();
 
         menubar.addMenus( menus );
+
+        userMenu.addMenus( newTopLevelMenu( "My roles" ).respondsWith(
+                new Command() {
+                    @Override
+                    public void execute() {
+                        final Set<Role> roles = user.getRoles();
+                        if ( roles == null || roles.isEmpty() ) {
+                            Window.alert( "You have no roles assigned" );
+                        } else {
+                            Window.alert( "Currently logged in using roles: " + roles );
+                        }
+                    }
+                }
+        ).endMenu().build() );
+
+        utilityMenu.addMenus(
+                newTopLevelCustomMenu( userMenu ).endMenu()
+                        .newTopLevelMenu( "Status" )
+                        .respondsWith( new Command() {
+                            @Override
+                            public void execute() {
+                                Window.alert( "Hello from status!" );
+                            }
+                        } )
+                        .endMenu()
+                        .newTopLevelCustomMenu( manager.lookupBean( CustomSplashHelp.class ).getInstance() )
+                        .endMenu()
+                        .build() );
     }
 
-    private List<MenuItem> getScreens() {
+    public static List<MenuItem> getScreens() {
         final List<MenuItem> screens = new ArrayList<MenuItem>();
         final List<String> names = new ArrayList<String>();
 
@@ -158,6 +176,7 @@ public class ShowcaseEntryPoint {
 
         Collections.sort( names );
 
+        final PlaceManager placeManager = IOC.getBeanManager().lookupBean( PlaceManager.class ).getInstance();
         for ( final String name : names ) {
             final MenuItem item = MenuFactory.newSimpleItem( name )
                     .respondsWith( new Command() {
@@ -176,15 +195,7 @@ public class ShowcaseEntryPoint {
         final List<MenuItem> perspectives = new ArrayList<MenuItem>();
         for ( final PerspectiveActivity perspective : getPerspectiveActivities() ) {
             final String name = perspective.getDefaultPerspectiveLayout().getName();
-            final Command cmd = new Command() {
-
-                @Override
-                public void execute() {
-                    placeManager.goTo( new DefaultPlaceRequest( perspective.getIdentifier() ) );
-                }
-
-            };
-            final MenuItem item = MenuFactory.newSimpleItem( name ).respondsWith( cmd ).endMenu().build().getItems().get( 0 );
+            final MenuItem item = MenuFactory.newSimpleItem( name ).perspective( perspective.getIdentifier() ).endMenu().build().getItems().get( 0 );
             perspectives.add( item );
         }
 
