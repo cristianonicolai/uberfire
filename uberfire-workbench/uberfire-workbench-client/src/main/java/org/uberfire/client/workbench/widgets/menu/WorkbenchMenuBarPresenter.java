@@ -16,18 +16,14 @@
 package org.uberfire.client.workbench.widgets.menu;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.PerspectiveChange;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuItemPerspective;
 import org.uberfire.workbench.model.menu.Menus;
@@ -85,7 +81,7 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
 
     protected void onPerspectiveChange( @Observes PerspectiveChange perspectiveChange ) {
         final MenuItemPerspective mip = perspectiveMenus.get( perspectiveChange.getIdentifier() );
-        if( mip != null) {
+        if ( mip != null ) {
             view.selectMenu( mip );
         }
     }

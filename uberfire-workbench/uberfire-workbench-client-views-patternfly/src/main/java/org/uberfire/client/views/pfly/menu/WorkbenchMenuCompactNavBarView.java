@@ -19,6 +19,7 @@
 package org.uberfire.client.views.pfly.menu;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -32,11 +33,11 @@ import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.ListDropDown;
 import org.gwtbootstrap3.client.ui.NavbarNav;
+import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
-import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.PespectiveContextMenusPresenter;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -48,7 +49,7 @@ import org.uberfire.workbench.model.menu.Menus;
  * Created by Cristiano Nicolai.
  */
 @Dependent
-public class WorkbenchMenuCompactNavBarView extends NavbarNav implements HasMenus, HasMenuItems {
+public class WorkbenchMenuCompactNavBarView extends NavbarNav implements WorkbenchMenuBarView.NavBarView, HasMenuItems {
 
     private final AnchorButton anchor = new AnchorButton();
     private final Text text = new Text();
@@ -88,8 +89,20 @@ public class WorkbenchMenuCompactNavBarView extends NavbarNav implements HasMenu
         menus.accept( new AuthFilterMenuVisitor( authzManager, identity, new CompactMenuVisitor( this ) ) );
     }
 
-    public void selectMenu( final MenuItemPerspective menu ){
+    @Override
+    public void selectMenu( final MenuItem menu ) {
+        selectElement( menu.getCaption(), listItemMap.get( menu ) );
+    }
 
+    private void selectElement( final String caption, final AnchorListItem item ) {
+        final Iterator<Widget> iterator = dropDownMenu.iterator();
+        while ( iterator.hasNext() ) {
+            iterator.next().removeStyleName( Styles.ACTIVE );
+        }
+        if ( item != null ) {
+            item.addStyleName( Styles.ACTIVE );
+        }
+        text.setText( caption );
     }
 
     private class CompactMenuVisitor extends DropdownMenuVisitor {
@@ -104,12 +117,17 @@ public class WorkbenchMenuCompactNavBarView extends NavbarNav implements HasMenu
             item.addClickHandler( new ClickHandler() {
                 @Override
                 public void onClick( ClickEvent event ) {
-                    text.setText( menuItem.getCaption() );
+                    selectElement( menuItem.getCaption(), item );
                 }
             } );
             return item;
         }
 
-
+        @Override
+        protected AnchorListItem buildMenuPerspective( final MenuItemPerspective menuItemPerspective, final HasMenuItems hasMenuItems ) {
+            final AnchorListItem item = super.buildMenuPerspective( menuItemPerspective, hasMenuItems );
+            listItemMap.put( menuItemPerspective, item );
+            return item;
+        }
     }
 }

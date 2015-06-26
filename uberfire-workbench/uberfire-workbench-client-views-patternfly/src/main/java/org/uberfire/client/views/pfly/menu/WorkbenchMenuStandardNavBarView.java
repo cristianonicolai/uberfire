@@ -18,14 +18,19 @@
 
 package org.uberfire.client.views.pfly.menu;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.AnchorButton;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.ListDropDown;
 import org.gwtbootstrap3.client.ui.NavbarNav;
@@ -34,11 +39,11 @@ import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
-import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.PespectiveContextMenusPresenter;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.menu.MenuCustom;
 import org.uberfire.workbench.model.menu.MenuGroup;
+import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuItemCommand;
 import org.uberfire.workbench.model.menu.MenuItemPerspective;
 import org.uberfire.workbench.model.menu.MenuItemPlain;
@@ -49,7 +54,9 @@ import org.uberfire.workbench.model.menu.Menus;
  * Created by Cristiano Nicolai.
  */
 @Dependent
-public class WorkbenchMenuStandardNavBarView extends NavbarNav implements HasMenus, HasMenuItems {
+public class WorkbenchMenuStandardNavBarView extends NavbarNav implements WorkbenchMenuBarView.NavBarView, HasMenuItems {
+
+    private final Map<MenuItemPerspective, AnchorListItem> listItemMap = new HashMap<MenuItemPerspective, AnchorListItem>();
 
     @Inject
     private PespectiveContextMenusPresenter.View perspectiveContextMenuView;
@@ -85,6 +92,33 @@ public class WorkbenchMenuStandardNavBarView extends NavbarNav implements HasMen
                 menuContent.addStyleName( Styles.PULL_RIGHT );
                 this.add( menuContent );
                 break;
+        }
+    }
+
+    @Override
+    public void selectMenu( final MenuItem menu ){
+        selectElement( listItemMap.get( menu ) );
+    }
+
+    private void selectElement( final AnchorListItem item ){
+        iterateWidgets( this );
+
+        if( item != null ){
+            item.addStyleName( Styles.ACTIVE );
+        }
+
+        if( item.getParent().getParent() instanceof ListDropDown){
+            item.getParent().getParent().addStyleName( Styles.ACTIVE );
+        }
+    }
+
+    private void iterateWidgets( final Widget widget ){
+        widget.removeStyleName( Styles.ACTIVE );
+        if( widget instanceof ComplexPanel){
+            final Iterator<Widget> iterator = ((ComplexPanel) widget).iterator();
+            while( iterator.hasNext() ) {
+                iterateWidgets( iterator.next() );
+            }
         }
     }
 
@@ -161,6 +195,13 @@ public class WorkbenchMenuStandardNavBarView extends NavbarNav implements HasMen
         @Override
         public void visit( final MenuItemPerspective menuItemPerspective ) {
             buildMenuPerspective( menuItemPerspective, parentMenus.peek() );
+        }
+
+        @Override
+        protected AnchorListItem buildMenuPerspective( final MenuItemPerspective menuItemPerspective, final HasMenuItems hasMenuItems ) {
+            final AnchorListItem item = super.buildMenuPerspective( menuItemPerspective, hasMenuItems );
+            listItemMap.put( menuItemPerspective, item );
+            return item;
         }
     }
 }

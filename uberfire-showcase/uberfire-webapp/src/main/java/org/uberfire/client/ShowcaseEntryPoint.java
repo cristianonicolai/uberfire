@@ -225,6 +225,15 @@ public class ShowcaseEntryPoint {
         //Get Perspective Providers
         final Set<PerspectiveActivity> activities = activityManager.getActivities( PerspectiveActivity.class );
 
+        //Remove default perspective to avoid duplicate menu
+        final Iterator<PerspectiveActivity> iterator = activities.iterator();
+        while( iterator.hasNext() ){
+            final PerspectiveActivity activity = iterator.next();
+            if( activity.isDefault() ){
+                iterator.remove();
+            }
+        }
+
         //Sort Perspective Providers so they're always in the same sequence!
         List<PerspectiveActivity> sortedActivities = new ArrayList<PerspectiveActivity>( activities );
         Collections.sort( sortedActivities,

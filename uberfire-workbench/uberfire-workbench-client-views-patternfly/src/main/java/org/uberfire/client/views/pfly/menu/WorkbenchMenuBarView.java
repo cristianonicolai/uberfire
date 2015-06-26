@@ -32,6 +32,7 @@ import org.gwtbootstrap3.client.ui.constants.NavbarType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.container.IOCResolutionException;
+import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -41,6 +42,12 @@ import org.uberfire.workbench.model.menu.Menus;
  */
 @ApplicationScoped
 public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarPresenter.View {
+
+    public interface NavBarView extends HasMenus {
+
+        void selectMenu( MenuItem menu );
+
+    }
 
     @Inject
     private Instance<MainBrand> menuBarBrand;
@@ -118,6 +125,7 @@ public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarP
 
     @Override
     public void selectMenu( final MenuItem menu ) {
-
+        workbenchMenuCompactNavBarView.selectMenu( menu );
+        workbenchMenuStandardNavBarView.selectMenu( menu );
     }
 }
