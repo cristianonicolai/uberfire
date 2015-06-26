@@ -21,7 +21,14 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.shared.event.HiddenEvent;
+import org.gwtbootstrap3.client.shared.event.HiddenHandler;
+import org.gwtbootstrap3.client.shared.event.ShowEvent;
+import org.gwtbootstrap3.client.shared.event.ShowHandler;
+import org.gwtbootstrap3.client.shared.event.ShownEvent;
+import org.gwtbootstrap3.client.shared.event.ShownHandler;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Collapse;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.Navbar;
 import org.gwtbootstrap3.client.ui.NavbarBrand;
@@ -54,11 +61,17 @@ public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarP
 
     private final Navbar navBar = new Navbar();
 
+    private final NavbarHeader navbarHeader = new NavbarHeader();
+
+    private final NavbarCollapse navbarCollapse = new NavbarCollapse();
+
     @Inject
     private WorkbenchMenuCompactNavBarView workbenchMenuCompactNavBarView;
 
     @Inject
     private WorkbenchMenuStandardNavBarView workbenchMenuStandardNavBarView;
+
+    private Collapse navBarCollapse = new Collapse();
 
     @Inject
     private UtilityMenuBarView utilityMenuBarView;
@@ -68,36 +81,75 @@ public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarP
         navBar.setType( NavbarType.INVERSE );
         navBar.addStyleName( "navbar-pf" );
 
-        final NavbarHeader headerContainer = new NavbarHeader();
         try {
             final NavbarBrand brand = new NavbarBrand();
             brand.add(menuBarBrand.get());
-            headerContainer.add(brand);
+            navbarHeader.add( brand );
         } catch ( IOCResolutionException e ) {
             // app didn't provide a branded header bean
         }
-        navBar.add( headerContainer );
+        navBar.add( navbarHeader );
 
-        final NavbarCollapse collapsibleContainer = new NavbarCollapse();
-        collapsibleContainer.add( workbenchMenuCompactNavBarView );
-        collapsibleContainer.add( workbenchMenuStandardNavBarView );
-        collapsibleContainer.add( utilityMenuBarView );
+        setupNavBarCollapse();
 
-        navBar.add( collapsibleContainer );
+        navbarCollapse.add( workbenchMenuCompactNavBarView );
+        navbarCollapse.add( navBarCollapse );
+        navbarCollapse.add( utilityMenuBarView );
 
-        final Button btnToggle = new Button();
-        btnToggle.removeStyleName( "btn-default" );
-        btnToggle.addStyleName( Styles.NAVBAR_TOGGLE );
-        btnToggle.setDataToggle( Toggle.COLLAPSE );
-        btnToggle.setDataTargetWidget( collapsibleContainer );
-        final Icon icon = new Icon( IconType.BARS );
-        icon.addStyleName( "fa-inverse" );
-        btnToggle.add( icon );
-        headerContainer.add( btnToggle );
+        navBar.add( navbarCollapse );
+
+        setupToggle();
 
         initWidget( navBar );
 
         expand();
+    }
+
+    protected void setupToggle() {
+        final Button btnToggle = new Button();
+        btnToggle.removeStyleName( "btn-default" );
+        btnToggle.addStyleName( Styles.NAVBAR_TOGGLE );
+        btnToggle.setDataToggle( Toggle.COLLAPSE );
+        btnToggle.setDataTargetWidget( navbarCollapse );
+        final Icon icon = new Icon( IconType.BARS );
+        icon.addStyleName( "fa-inverse" );
+        btnToggle.add( icon );
+        navbarHeader.add( btnToggle );
+    }
+
+    protected void setupNavBarCollapse() {
+        workbenchMenuCompactNavBarView.addStyleName( "hidden" );
+        navBarCollapse.addShowHandler( new ShowHandler() {
+            @Override
+            public void onShow( ShowEvent showEvent ) {
+                workbenchMenuCompactNavBarView.removeStyleName( "show" );
+                workbenchMenuCompactNavBarView.addStyleName( "hidden" );
+                navbarHeader.removeStyleName( Styles.PULL_LEFT );
+                workbenchMenuStandardNavBarView.removeStyleName( "hidden" );
+                workbenchMenuStandardNavBarView.addStyleName( "show" );
+            }
+        } );
+        navBarCollapse.addShownHandler( new ShownHandler() {
+            @Override
+            public void onShown( ShownEvent event ) {
+                navBar.removeStyleName( "uf-navbar-compact" );
+            }
+        } );
+
+        navBarCollapse.addHiddenHandler( new HiddenHandler() {
+            @Override
+            public void onHidden( HiddenEvent event ) {
+                workbenchMenuStandardNavBarView.removeStyleName( "show" );
+                workbenchMenuStandardNavBarView.addStyleName( "hidden" );
+
+                navbarHeader.addStyleName( Styles.PULL_LEFT );
+                workbenchMenuCompactNavBarView.removeStyleName( "hidden" );
+                workbenchMenuCompactNavBarView.addStyleName( "show" );
+                navBar.addStyleName( "uf-navbar-compact" );
+            }
+        } );
+        navBarCollapse.addStyleName( Styles.IN );
+        navBarCollapse.add( workbenchMenuStandardNavBarView );
     }
 
     @Override
@@ -115,12 +167,16 @@ public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarP
 
     @Override
     public void expand(){
-        navBar.removeStyleName( "uf-navbar-compact" );
+        if ( navBarCollapse.isHidden() ) {
+            navBarCollapse.show();
+        }
     }
 
     @Override
     public void collapse(){
-        navBar.addStyleName( "uf-navbar-compact" );
+        if ( navBarCollapse.isShown() ) {
+            navBarCollapse.hide();
+        }
     }
 
     @Override

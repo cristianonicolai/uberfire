@@ -24,6 +24,8 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.PerspectiveChange;
+import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
+import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuItemPerspective;
 import org.uberfire.workbench.model.menu.Menus;
@@ -79,11 +81,19 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
         }
     }
 
-    protected void onPerspectiveChange( @Observes PerspectiveChange perspectiveChange ) {
+    protected void onPerspectiveChange( @Observes final PerspectiveChange perspectiveChange ) {
         final MenuItemPerspective mip = perspectiveMenus.get( perspectiveChange.getIdentifier() );
         if ( mip != null ) {
             view.selectMenu( mip );
         }
+    }
+
+    protected void onPlaceMinimized( @Observes final PlaceMinimizedEvent event ) {
+        view.expand();
+    }
+
+    protected void onPlaceMaximized( @Observes final PlaceMaximizedEvent event ) {
+        view.collapse();
     }
 
     @Override
