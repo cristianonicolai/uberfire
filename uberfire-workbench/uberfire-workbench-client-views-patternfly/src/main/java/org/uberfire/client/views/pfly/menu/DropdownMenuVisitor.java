@@ -21,6 +21,7 @@ package org.uberfire.client.views.pfly.menu;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.DropDownHeader;
 import org.jboss.errai.ioc.client.container.IOC;
@@ -52,7 +53,7 @@ public class DropdownMenuVisitor extends BaseMenuVisitor {
         return true;
     }
 
-    protected DropDownHeader buildMenuGroup( final MenuGroup menuGroup, final HasMenuItems hasMenuItems ){
+    protected Widget buildMenuGroup( final MenuGroup menuGroup, final HasMenuItems hasMenuItems ) {
         final DropDownHeader group = new DropDownHeader();
         group.setText( menuGroup.getCaption() );
         hasMenuItems.addMenuItem( menuGroup.getPosition(), group );
@@ -71,7 +72,7 @@ public class DropdownMenuVisitor extends BaseMenuVisitor {
         }
     }
 
-    protected AnchorListItem buildMenuCustom( final MenuCustom<?> menuCustom, final HasMenuItems hasMenuItems ){
+    protected Widget buildMenuCustom( final MenuCustom<?> menuCustom, final HasMenuItems hasMenuItems ) {
         return createListItem( menuCustom, hasMenuItems );
     }
 
@@ -80,7 +81,7 @@ public class DropdownMenuVisitor extends BaseMenuVisitor {
         buildMenuCommand( menuItemCommand, this.hasMenuItems );
     }
 
-    protected AnchorListItem buildMenuCommand( final MenuItemCommand menuItemCommand, final HasMenuItems hasMenuItems ){
+    protected Widget buildMenuCommand( final MenuItemCommand menuItemCommand, final HasMenuItems hasMenuItems ) {
         final AnchorListItem item = createListItem( menuItemCommand, hasMenuItems );
         item.addClickHandler( new ClickHandler() {
             @Override
@@ -96,7 +97,7 @@ public class DropdownMenuVisitor extends BaseMenuVisitor {
         buildMenuPerspective( menuItemPerspective, this.hasMenuItems );
     }
 
-    protected AnchorListItem buildMenuPerspective( final MenuItemPerspective menuItemPerspective, final HasMenuItems hasMenuItems ){
+    protected Widget buildMenuPerspective( final MenuItemPerspective menuItemPerspective, final HasMenuItems hasMenuItems ) {
         final AnchorListItem item = createListItem( menuItemPerspective, hasMenuItems );
         item.addClickHandler( new ClickHandler() {
             @Override
@@ -112,7 +113,7 @@ public class DropdownMenuVisitor extends BaseMenuVisitor {
         buildMenuPlain( menuItemPlain, this.hasMenuItems );
     }
 
-    protected AnchorListItem buildMenuPlain( final MenuItemPlain menuItemPlain, final HasMenuItems hasMenuItems ){
+    protected Widget buildMenuPlain( final MenuItemPlain menuItemPlain, final HasMenuItems hasMenuItems ) {
         return createListItem( menuItemPlain, hasMenuItems );
     }
 

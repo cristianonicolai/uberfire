@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -38,7 +38,6 @@ import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
-import org.uberfire.client.workbench.widgets.menu.PespectiveContextMenusPresenter;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuItemPerspective;
@@ -48,7 +47,7 @@ import org.uberfire.workbench.model.menu.Menus;
 /**
  * Created by Cristiano Nicolai.
  */
-@Dependent
+@ApplicationScoped
 public class WorkbenchMenuCompactNavBarView extends NavbarNav implements WorkbenchMenuBarView.NavBarView, HasMenuItems {
 
     private final AnchorButton anchor = new AnchorButton();
@@ -56,10 +55,7 @@ public class WorkbenchMenuCompactNavBarView extends NavbarNav implements Workben
     private final DropDownMenu dropDownMenu = new DropDownMenu();
     private final ListDropDown listDropDown = new ListDropDown();
 
-    private final Map<MenuItemPerspective, AnchorListItem> listItemMap = new HashMap<MenuItemPerspective, AnchorListItem>();
-
-    @Inject
-    private PespectiveContextMenusPresenter.View perspectiveContextMenuView;
+    private final Map<MenuItemPerspective, Widget> listItemMap = new HashMap<MenuItemPerspective, Widget>();
 
     @Inject
     private AuthorizationManager authzManager;
@@ -75,8 +71,6 @@ public class WorkbenchMenuCompactNavBarView extends NavbarNav implements Workben
         listDropDown.add( anchor );
         listDropDown.add( dropDownMenu );
         this.add( listDropDown );
-        this.add( perspectiveContextMenuView );
-
     }
 
     @Override
@@ -94,7 +88,7 @@ public class WorkbenchMenuCompactNavBarView extends NavbarNav implements Workben
         selectElement( menu.getCaption(), listItemMap.get( menu ) );
     }
 
-    private void selectElement( final String caption, final AnchorListItem item ) {
+    private void selectElement( final String caption, final Widget item ) {
         final Iterator<Widget> iterator = dropDownMenu.iterator();
         while ( iterator.hasNext() ) {
             iterator.next().removeStyleName( Styles.ACTIVE );
@@ -124,8 +118,8 @@ public class WorkbenchMenuCompactNavBarView extends NavbarNav implements Workben
         }
 
         @Override
-        protected AnchorListItem buildMenuPerspective( final MenuItemPerspective menuItemPerspective, final HasMenuItems hasMenuItems ) {
-            final AnchorListItem item = super.buildMenuPerspective( menuItemPerspective, hasMenuItems );
+        protected Widget buildMenuPerspective( final MenuItemPerspective menuItemPerspective, final HasMenuItems hasMenuItems ) {
+            final Widget item = super.buildMenuPerspective( menuItemPerspective, hasMenuItems );
             listItemMap.put( menuItemPerspective, item );
             return item;
         }
