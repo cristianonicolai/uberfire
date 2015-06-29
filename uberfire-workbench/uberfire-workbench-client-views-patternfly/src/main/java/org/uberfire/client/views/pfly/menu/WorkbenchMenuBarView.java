@@ -146,6 +146,7 @@ public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarP
                 workbenchMenuCompactNavBarView.removeStyleName( "hidden" );
                 workbenchMenuCompactNavBarView.addStyleName( "show" );
                 navBar.addStyleName( "uf-navbar-compact" );
+                navBarCollapse.removeStyleName( Styles.IN );
             }
         } );
         navBarCollapse.addStyleName( Styles.IN );

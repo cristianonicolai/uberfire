@@ -23,6 +23,8 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.UserPreferences;
+import org.uberfire.client.workbench.events.ApplicationReadyEvent;
 import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
 import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
@@ -64,6 +66,17 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
     @Inject
     private PlaceManager placeManager;
 
+    @Inject
+    private UserPreferences userPreferences;
+
+    protected void setup( @Observes ApplicationReadyEvent ready ) {
+        if ( userPreferences.isUseWorkbenchInStandardMode() ) {
+            expand();
+        } else {
+            collapse();
+        }
+    }
+
     public IsWidget getView() {
         return this.view;
     }
@@ -89,7 +102,9 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
     }
 
     protected void onPlaceMinimized( @Observes final PlaceMinimizedEvent event ) {
-        view.expand();
+        if ( userPreferences.isUseWorkbenchInStandardMode() ) {
+            view.expand();
+        }
     }
 
     protected void onPlaceMaximized( @Observes final PlaceMaximizedEvent event ) {

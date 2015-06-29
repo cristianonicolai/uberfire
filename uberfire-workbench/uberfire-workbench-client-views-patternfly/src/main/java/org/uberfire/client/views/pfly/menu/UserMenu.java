@@ -20,6 +20,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.User.StandardUserProperties;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
+import org.uberfire.client.workbench.UserPreferences;
 import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -38,6 +39,9 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
 
     @Inject
     private User user;
+
+    @Inject
+    private UserPreferences userPreferences;
 
     @Inject
     private Caller<AuthenticationService> authService;
@@ -87,13 +91,15 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
     protected void setupWorkbenchViewSwitcher() {
         final AnchorListItem defaultMenu = new AnchorListItem( "Switch to Default View" );
         final AnchorListItem compactMenu = new AnchorListItem( "Switch to Compact View" );
-        defaultMenu.setVisible( false );
+        defaultMenu.setVisible( userPreferences.isUseWorkbenchInStandardMode() == false );
+        compactMenu.setVisible( userPreferences.isUseWorkbenchInStandardMode() );
         compactMenu.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
                 defaultMenu.setVisible( true );
                 compactMenu.setVisible( false );
                 menubar.collapse();
+                userPreferences.setUseWorkbenchInStandardMode( false );
             }
         } );
         defaultMenu.addClickHandler( new ClickHandler() {
@@ -102,6 +108,7 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
                 compactMenu.setVisible( true );
                 defaultMenu.setVisible( false );
                 menubar.expand();
+                userPreferences.setUseWorkbenchInStandardMode( true );
             }
         } );
         menu.add( defaultMenu );
