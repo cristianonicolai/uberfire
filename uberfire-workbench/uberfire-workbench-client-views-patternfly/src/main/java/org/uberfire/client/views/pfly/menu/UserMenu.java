@@ -2,6 +2,7 @@ package org.uberfire.client.views.pfly.menu;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -21,6 +22,8 @@ import org.jboss.errai.security.shared.api.identity.User.StandardUserProperties;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
 import org.uberfire.client.workbench.UserPreferences;
+import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
+import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
 import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -53,6 +56,8 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
     private WorkbenchMenuBar menubar;
 
     private final DropDownMenu menu = new DropDownMenu();
+    private final AnchorListItem defaultMenu = new AnchorListItem( "Switch to Default View" );
+    private final AnchorListItem compactMenu = new AnchorListItem( "Switch to Compact View" );
 
     @PostConstruct
     protected void setup() {
@@ -89,8 +94,6 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
     }
 
     protected void setupWorkbenchViewSwitcher() {
-        final AnchorListItem defaultMenu = new AnchorListItem( "Switch to Default View" );
-        final AnchorListItem compactMenu = new AnchorListItem( "Switch to Compact View" );
         defaultMenu.setVisible( userPreferences.isUseWorkbenchInStandardMode() == false );
         compactMenu.setVisible( userPreferences.isUseWorkbenchInStandardMode() );
         compactMenu.addClickHandler( new ClickHandler() {
@@ -113,6 +116,16 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
         } );
         menu.add( defaultMenu );
         menu.add( compactMenu );
+    }
+
+    protected void onPlaceMinimized( @Observes final PlaceMinimizedEvent event ) {
+        defaultMenu.setEnabled( true );
+        compactMenu.setEnabled( true );
+    }
+
+    protected void onPlaceMaximized( @Observes final PlaceMaximizedEvent event ) {
+        defaultMenu.setEnabled( false );
+        compactMenu.setEnabled( false );
     }
 
     @Override
