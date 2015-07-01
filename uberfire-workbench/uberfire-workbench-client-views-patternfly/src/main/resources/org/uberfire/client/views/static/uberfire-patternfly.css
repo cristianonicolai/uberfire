@@ -32,8 +32,8 @@
     padding: 0px;
 }
 
-.uf-listbar-panel-header {
-    background-color: #FFFFFF !important;
+.uf-listbar-panel .uf-listbar-panel-header {
+    background-color: #FFFFFF;
     min-height: 36px;
 }
 
@@ -53,8 +53,8 @@
     margin-right: 15px;
 }
 
-.uf-listbar-panel-header-toolbar .dropdown > .btn {
-    vertical-align: baseline !important;
+.uf-listbar-panel-header .uf-listbar-panel-header-toolbar .dropdown > .btn {
+    vertical-align: baseline;
 }
 
 .uf-listbar-panel-header-toolbar .dropdown-menu {
@@ -176,11 +176,7 @@
 }
 
 .uf-multi-page-editor .nav-tabs-pf > li:first-child > a {
-    padding-left: 15px;
-}
-
-.uf-multi-page-editor .nav-tabs-pf > li:first-child > a:before {
-    left: 15px !important;
+    margin-left: 15px;
 }
 
 .uf-multi-page-editor .uf-tabbar-panel-nav-tabs {
