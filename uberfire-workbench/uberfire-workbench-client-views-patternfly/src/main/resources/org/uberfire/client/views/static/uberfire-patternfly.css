@@ -237,6 +237,7 @@
 }
 
 .navbar-pf .navbar-nav .uf-perspective-context-menu.open > a,
-.navbar-pf .navbar-nav .uf-perspective-context-menu > a:hover {
+.navbar-pf .navbar-nav .uf-perspective-context-menu > a:hover,
+.navbar-pf .navbar-nav .uf-perspective-context-menu > a:focus {
     color: #0076b7;
 }
