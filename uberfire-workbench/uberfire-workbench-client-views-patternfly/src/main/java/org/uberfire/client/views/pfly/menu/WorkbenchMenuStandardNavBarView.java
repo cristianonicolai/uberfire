@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -42,7 +42,7 @@ import org.uberfire.workbench.model.menu.Menus;
 /**
  * Created by Cristiano Nicolai.
  */
-@Dependent
+@ApplicationScoped
 public class WorkbenchMenuStandardNavBarView extends NavbarNav implements WorkbenchMenuBarView.NavBarView, HasMenuItems {
 
     private final Map<MenuItemPerspective, Widget> listItemMap = new HashMap<MenuItemPerspective, Widget>();
