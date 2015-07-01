@@ -216,9 +216,12 @@
 
 @media (max-width: 767px) {
     .navbar-pf .navbar-header {
-        float: none;
+        float: none !important;
     }
 
+    .uf-perspective-context-menu {
+        float: none !important;
+    }
 }
 
 /* Fix for modal behind backdrop. Potentially fixed by the next BS release.
