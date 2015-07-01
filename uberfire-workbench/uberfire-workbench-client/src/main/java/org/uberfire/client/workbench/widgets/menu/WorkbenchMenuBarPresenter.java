@@ -22,12 +22,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.UserPreferences;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
 import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
 import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
+import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuItemPerspective;
 import org.uberfire.workbench.model.menu.Menus;
@@ -56,15 +56,16 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
         void expand();
 
         void collapse();
+
+        void addCollapseHandler( Command command );
+
+        void addExpandHandler( Command command );
     }
 
     private final Map<String, MenuItemPerspective> perspectiveMenus = new HashMap<String, MenuItemPerspective>();
 
     @Inject
     private View view;
-
-    @Inject
-    private PlaceManager placeManager;
 
     @Inject
     private UserPreferences userPreferences;
@@ -125,5 +126,15 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
     @Override
     public void collapse() {
         view.collapse();
+    }
+
+    @Override
+    public void addCollapseHandler( final Command command ) {
+        view.addCollapseHandler( command );
+    }
+
+    @Override
+    public void addExpandHandler( final Command command ) {
+        view.addExpandHandler( command );
     }
 }

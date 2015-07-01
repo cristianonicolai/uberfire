@@ -22,10 +22,12 @@ import org.jboss.errai.security.shared.api.identity.User.StandardUserProperties;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
 import org.uberfire.client.workbench.UserPreferences;
+import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
 import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
 import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
+import org.uberfire.mvp.Command;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -99,8 +101,6 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
         compactMenu.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                defaultMenu.setVisible( true );
-                compactMenu.setVisible( false );
                 menubar.collapse();
                 userPreferences.setUseWorkbenchInStandardMode( false );
             }
@@ -108,24 +108,45 @@ public class UserMenu extends AnchorListItem implements MenuFactory.CustomMenuBu
         defaultMenu.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                compactMenu.setVisible( true );
-                defaultMenu.setVisible( false );
                 menubar.expand();
                 userPreferences.setUseWorkbenchInStandardMode( true );
             }
         } );
         menu.add( defaultMenu );
         menu.add( compactMenu );
+
+        menubar.addCollapseHandler( new Command() {
+            @Override
+            public void execute() {
+                defaultMenu.setVisible( true );
+                compactMenu.setVisible( false );
+            }
+        } );
+
+        menubar.addExpandHandler( new Command() {
+            @Override
+            public void execute() {
+                compactMenu.setVisible( true );
+                defaultMenu.setVisible( false );
+            }
+        } );
+    }
+
+    protected void onPerspectiveChange( @Observes final PerspectiveChange perspectiveChange ) {
+        setEnabledSwitchMenu( true );
     }
 
     protected void onPlaceMinimized( @Observes final PlaceMinimizedEvent event ) {
-        defaultMenu.setEnabled( true );
-        compactMenu.setEnabled( true );
+        setEnabledSwitchMenu( true );
     }
 
     protected void onPlaceMaximized( @Observes final PlaceMaximizedEvent event ) {
-        defaultMenu.setEnabled( false );
-        compactMenu.setEnabled( false );
+        setEnabledSwitchMenu( false );
+    }
+
+    protected void setEnabledSwitchMenu( boolean enabled ) {
+        defaultMenu.setEnabled( enabled );
+        compactMenu.setEnabled( enabled );
     }
 
     @Override

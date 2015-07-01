@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.shared.event.HiddenEvent;
 import org.gwtbootstrap3.client.shared.event.HiddenHandler;
+import org.gwtbootstrap3.client.shared.event.HideEvent;
+import org.gwtbootstrap3.client.shared.event.HideHandler;
 import org.gwtbootstrap3.client.shared.event.ShowEvent;
 import org.gwtbootstrap3.client.shared.event.ShowHandler;
 import org.gwtbootstrap3.client.shared.event.ShownEvent;
@@ -41,6 +43,7 @@ import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.container.IOCResolutionException;
 import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -184,5 +187,25 @@ public class WorkbenchMenuBarView extends Composite implements WorkbenchMenuBarP
     public void selectMenu( final MenuItem menu ) {
         workbenchMenuCompactNavBarView.selectMenu( menu );
         workbenchMenuStandardNavBarView.selectMenu( menu );
+    }
+
+    @Override
+    public void addCollapseHandler( final Command command ) {
+        navBarCollapse.addHideHandler( new HideHandler() {
+            @Override
+            public void onHide( final HideEvent hideEvent ) {
+                command.execute();
+            }
+        } );
+    }
+
+    @Override
+    public void addExpandHandler( final Command command ) {
+        navBarCollapse.addShowHandler( new ShowHandler() {
+            @Override
+            public void onShow( final ShowEvent showEvent ) {
+                command.execute();
+            }
+        } );
     }
 }
