@@ -232,3 +232,12 @@
 .modal-dialog {
     z-index: 1050;
 }
+
+.navbar-pf .navbar-nav .uf-perspective-context-menu > a {
+    color: #0099d3;
+}
+
+.navbar-pf .navbar-nav .uf-perspective-context-menu.open > a,
+.navbar-pf .navbar-nav .uf-perspective-context-menu > a:hover {
+    color: #0076b7;
+}
