@@ -7,7 +7,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
@@ -59,7 +58,6 @@ public class PerspectiveContextMenusView implements PerspectiveContextMenusPrese
         menus.accept( new AuthFilterMenuVisitor( authzManager, identity, new StackedDropdownMenuVisitor( new HasMenuItems() {
             @Override
             public void addMenuItem( final MenuPosition position, final Widget menuContent ) {
-                GWT.log( "add menu item: " + menuContent );
                 menuContent.addStyleName( UF_PERSPECTIVE_CONTEXT_MENU );
                 widgets.add( menuContent );
             }
